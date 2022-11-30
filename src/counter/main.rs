@@ -1,4 +1,4 @@
-use iced::widget::{button, text, row};
+use iced::widget::{button, row, text};
 use iced::{window, Alignment, Element, Sandbox, Settings};
 
 pub fn main() -> iced::Result {

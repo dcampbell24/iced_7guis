@@ -1,6 +1,6 @@
 [package]
 name = "iced_7guis"
-description = "An implementation of 7 GUIs using Iced."
+description = "An implementation of 7 GUIs using iced."
 version = "0.1.0"
 edition = "2021"
 license = "MIT OR Apache-2.0"
@@ -16,3 +16,7 @@ iced = "0.5.2"
 [[bin]]
 name = "counter"
 path = "src/counter/main.rs"
+
+[[bin]]
+name = "temperature_converter"
+path = "src/temperature_converter/main.rs"
