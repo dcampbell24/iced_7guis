@@ -7,7 +7,7 @@ license = "MIT OR Apache-2.0"
 keywords = ["7guis"]
 # documentation = "https://docs.rs/iced_7guis"
 # homepage = ""
-# repository = ""
+repository = "https://github.com/dcampbell24/iced_7guis"
 readme = "README.md"
 
 [dependencies]
