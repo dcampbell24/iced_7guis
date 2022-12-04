@@ -1,7 +1,5 @@
+use iced::widget::{button, column, container, pick_list, scrollable, text_input};
 use iced::{theme, window};
-use iced::widget::{
-    button, column, container, pick_list, scrollable, text_input
-};
 use iced::{Alignment, Element, Length, Sandbox, Settings};
 
 use std::fmt;
@@ -75,7 +73,7 @@ impl FlightBooker {
     }
 
     fn validate_return_flight(&mut self) {
-        match (&self.one_way_flight_date, &self.return_flight_date) { 
+        match (&self.one_way_flight_date, &self.return_flight_date) {
             (Some((day_1, month_1, year_1)), Some((day_2, month_2, year_2))) => {
                 if year_2 >= year_1 && month_2 >= month_1 && day_2 >= day_1 {
                     self.book = true
@@ -83,7 +81,7 @@ impl FlightBooker {
                     self.book = false
                 }
             }
-            _ => self.book = false
+            _ => self.book = false,
         }
     }
 }
@@ -106,11 +104,19 @@ impl Sandbox for FlightBooker {
 
                 let one_way_flight_date = match self.one_way_flight_date {
                     Some((day, month, year)) => PrettyDate { day, month, year },
-                    None => PrettyDate { day: 0, month: 0, year: 0 },
+                    None => PrettyDate {
+                        day: 0,
+                        month: 0,
+                        year: 0,
+                    },
                 };
                 let return_flight_date = match self.return_flight_date {
                     Some((day, month, year)) => PrettyDate { day, month, year },
-                    None => PrettyDate { day: 0, month: 0, year: 0 },
+                    None => PrettyDate {
+                        day: 0,
+                        month: 0,
+                        year: 0,
+                    },
                 };
 
                 let one_way_string = format!(
@@ -120,8 +126,7 @@ impl Sandbox for FlightBooker {
 
                 let return_string = format!(
                     "You have booked a flight leaving on {:} and returning on {:}",
-                    one_way_flight_date,
-                    return_flight_date
+                    one_way_flight_date, return_flight_date
                 );
 
                 match self.selected_flight {
@@ -129,7 +134,7 @@ impl Sandbox for FlightBooker {
                     Some(Flight::Return) => self.dialogue_string = return_string,
                     None => self.dialogue_string = "".into(),
                 }
-            },
+            }
             Message::FlightSelected(flight) => {
                 self.selected_flight = Some(flight);
                 self.show_dialogue = false;
@@ -139,23 +144,20 @@ impl Sandbox for FlightBooker {
                     Some(Flight::Return) => self.validate_return_flight(),
                     None => self.book = false,
                 };
-            },
+            }
             Message::OneWayFlightChanged(date) => {
                 self.show_dialogue = false;
                 self.one_way_flight_date = validate_date(&date);
                 self.one_way_flight = date;
                 self.validate_one_way_flight();
-
-            },
+            }
             Message::ReturnFlightChanged(date) => {
                 self.show_dialogue = false;
                 self.return_flight_date = validate_date(&date);
                 self.return_flight = date;
                 self.validate_return_flight();
-            },
-            Message::None(_) => {
-
-            },
+            }
+            Message::None(_) => {}
         }
     }
 
@@ -165,9 +167,9 @@ impl Sandbox for FlightBooker {
             self.selected_flight,
             Message::FlightSelected,
         )
-            .width(Length::Fill);
+        .width(Length::Fill);
 
-        // When there is an error, supposed to make the background red. 
+        // When there is an error, supposed to make the background red.
         // let one_way_flight = if !self.one_way_flight.is_empty() && self.one_way_flight_date.is_none() {
         let one_way_flight = text_input("", &self.one_way_flight, Message::OneWayFlightChanged);
 
@@ -216,10 +218,7 @@ pub enum Flight {
 }
 
 impl Flight {
-    const ALL: [Flight; 2] = [
-        Flight::OneWay,
-        Flight::Return,
-    ];
+    const ALL: [Flight; 2] = [Flight::OneWay, Flight::Return];
 }
 
 impl Default for Flight {
@@ -244,13 +243,13 @@ impl std::fmt::Display for Flight {
 fn validate_date(date: &str) -> Option<(u32, u32, u32)> {
     let date = date.split('.').collect::<Vec<_>>();
     if date.len() != 3 {
-        return None
+        return None;
     }
 
     let day = match date[0].parse::<u32>() {
         Ok(num) => {
             if num == 0 {
-                return None
+                return None;
             }
             num
         }
@@ -260,7 +259,7 @@ fn validate_date(date: &str) -> Option<(u32, u32, u32)> {
     let month = match date[1].parse::<u32>() {
         Ok(num) => {
             if num == 0 {
-                return None
+                return None;
             }
             num
         }
@@ -270,7 +269,7 @@ fn validate_date(date: &str) -> Option<(u32, u32, u32)> {
     let year = match date[2].parse::<u32>() {
         Ok(num) => {
             if num == 0 {
-                return None
+                return None;
             }
             num
         }
