@@ -25,7 +25,7 @@ struct PrettyDate {
 
 impl fmt::Display for PrettyDate {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "{}.{}.{}", self.day, self.month, self.year)
+        write!(f, "{:02}.{:02}.{:04}", self.day, self.month, self.year)
     }
 }
 
@@ -275,5 +275,79 @@ fn validate_date(date: &str) -> Option<(u32, u32, u32)> {
         }
         Err(_) => return None,
     };
+
+    let mut leap_year = year % 4 == 0;
+
+    if year % 100 == 0 {
+        if year % 400 == 0 {
+            leap_year = true;
+        } else {
+            leap_year = false;
+        }
+    }
+
+    match month {
+        1 => match day {
+            1..=31 => (),
+            _ => return None,
+        },
+
+        2 => {
+            if leap_year {
+                match day {
+                    1..=29 => (),
+                    _ => return None,
+                }
+            } else {
+                match day {
+                    1..=28 => (),
+                    _ => return None,
+                }
+            }
+        }
+
+        3 => match day {
+            1..=31 => (),
+            _ => return None,
+        },
+        4 => match day {
+            1..=30 => (),
+            _ => return None,
+        },
+        5 => match day {
+            1..=31 => (),
+            _ => return None,
+        },
+        6 => match day {
+            1..=30 => (),
+            _ => return None,
+        },
+        7 => match day {
+            1..=31 => (),
+            _ => return None,
+        },
+        8 => match day {
+            1..=31 => (),
+            _ => return None,
+        },
+        9 => match day {
+            1..=30 => (),
+            _ => return None,
+        },
+        10 => match day {
+            1..=31 => (),
+            _ => return None,
+        },
+        11 => match day {
+            1..=30 => (),
+            _ => return None,
+        },
+        12 => match day {
+            1..=31 => (),
+            _ => return None,
+        },
+        _ => return None,
+    }
+
     Some((day, month, year))
 }

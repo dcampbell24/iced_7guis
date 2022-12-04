@@ -4,7 +4,7 @@ An implementation of [7 GUIs](https://eugenkiss.github.io/7guis/) using [iced](h
 
 * [X] Counter
 * [X] Temperature Converter
-* [ ] Flight Booker
+* [X] Flight Booker
 * [ ] Timer
 * [ ] CRUD
 * [ ] Circle Drawer
