@@ -167,11 +167,9 @@ impl Sandbox for FlightBooker {
         )
             .width(Length::Fill);
 
-        let one_way_flight = if !self.one_way_flight.is_empty() && self.one_way_flight_date.is_none() {
-            text_input("", &self.one_way_flight, Message::OneWayFlightChanged)
-        } else {
-            text_input("", &self.one_way_flight, Message::OneWayFlightChanged)
-        };
+        // When there is an error, supposed to make the background red. 
+        // let one_way_flight = if !self.one_way_flight.is_empty() && self.one_way_flight_date.is_none() {
+        let one_way_flight = text_input("", &self.one_way_flight, Message::OneWayFlightChanged);
 
         let return_flight = if self.selected_flight == Some(Flight::Return) {
             text_input("", &self.return_flight, Message::ReturnFlightChanged)
@@ -244,7 +242,7 @@ impl std::fmt::Display for Flight {
 }
 
 fn validate_date(date: &str) -> Option<(u32, u32, u32)> {
-    let date = date.split(".").collect::<Vec<_>>();
+    let date = date.split('.').collect::<Vec<_>>();
     if date.len() != 3 {
         return None
     }
