@@ -14,9 +14,13 @@ readme = "README.md"
 iced = "0.5.2"
 
 [[bin]]
-name = "counter"
+name = "7guis_counter"
 path = "src/counter/main.rs"
 
 [[bin]]
-name = "temperature_converter"
+name = "7guis_temperature_converter"
 path = "src/temperature_converter/main.rs"
+
+[[bin]]
+name = "7guis_flight_booker"
+path = "src/flight_booker/main.rs"
