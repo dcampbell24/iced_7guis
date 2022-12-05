@@ -100,7 +100,7 @@ impl Application for Timer {
 
     fn view(&self) -> Element<Message> {
         let elapsed_time = row![
-            "Elapsed Time",
+            "Elapsed Time: ",
             progress_bar(0.0..=self.duration_max, self.elapsed_time),
         ]
         .padding(10);
@@ -108,7 +108,7 @@ impl Application for Timer {
         let time_seconds = row![text(format!("{:.1}s", self.elapsed_time)),].padding(10);
 
         let duration = row![
-            "Duration",
+            "Duration: ",
             slider(0.0..=60.0, self.duration_max, Message::SliderChanged),
         ]
         .padding(10);
