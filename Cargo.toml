@@ -6,7 +6,7 @@ edition = "2021"
 license = "MIT OR Apache-2.0"
 keywords = ["7guis"]
 # documentation = "https://docs.rs/iced_7guis"
-# homepage = ""
+homepage = "https://eugenkiss.github.io/7guis/"
 repository = "https://github.com/dcampbell24/iced_7guis"
 readme = "README.md"
 
