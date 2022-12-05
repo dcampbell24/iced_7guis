@@ -11,7 +11,7 @@ repository = "https://github.com/dcampbell24/iced_7guis"
 readme = "README.md"
 
 [dependencies]
-iced = "0.5.2"
+iced = { version = "0.5.2", features = ["canvas", "tokio", "debug"] }
 
 [[bin]]
 name = "7guis_counter"
@@ -24,3 +24,7 @@ path = "src/temperature_converter/main.rs"
 [[bin]]
 name = "7guis_flight_booker"
 path = "src/flight_booker/main.rs"
+
+[[bin]]
+name = "7guis_timer"
+path = "src/timer/main.rs"
