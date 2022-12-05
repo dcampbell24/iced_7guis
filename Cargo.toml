@@ -28,3 +28,7 @@ path = "src/flight_booker/main.rs"
 [[bin]]
 name = "7guis_timer"
 path = "src/timer/main.rs"
+
+[[bin]]
+name = "7guis_crud"
+path = "src/crud/main.rs"
