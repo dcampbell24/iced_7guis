@@ -58,9 +58,10 @@ impl Sandbox for Crud {
         match message {
             Message::FilterPrefixChanged(prefix) => {
                 self.filter_prefix = prefix;
+                self.selected_name = None;
             }
-            Message::SelectedName(name) => {
-                self.selected_name = Some(name);
+            Message::SelectedName(index) => {
+                self.selected_name = Some(index);
             }
             Message::NameChanged(name) => {
                 self.name = name;
@@ -72,17 +73,34 @@ impl Sandbox for Crud {
                 if !self.sur_name.is_empty() && !self.name.is_empty() {
                     self.names.push(format!("{}, {}", self.sur_name, self.name))
                 }
+                self.selected_name = None;
             }
             Message::UpdatePressed => {
                 if !self.sur_name.is_empty() && !self.name.is_empty() {
-                    if let Some(name) = self.selected_name {
-                        self.names[name] = format!("{}, {}", self.sur_name, self.name);
+                    if let Some(index) = self.selected_name {
+                        let name_chosen = &self.display_names[index];
+                        let mut j = 0;
+                        for (i, name) in self.names.iter().enumerate() {
+                            if name_chosen == name {
+                                j = i;
+                                break;
+                            }
+                        }
+                        self.names[j] = format!("{}, {}", self.sur_name, self.name);
                     }
                 }
             }
             Message::DeletePressed => {
-                if let Some(name) = self.selected_name {
-                    self.names.remove(name);
+                if let Some(index) = self.selected_name {
+                    let name_chosen = self.display_names.remove(index);
+                    let mut j = 0;
+                    for (i, name) in self.names.iter().enumerate() {
+                        if &name_chosen == name {
+                            j = i;
+                            break;
+                        }
+                    }
+                    self.names.remove(j);
                 }
                 self.selected_name = None;
             }
