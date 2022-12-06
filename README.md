@@ -14,7 +14,7 @@ An implementation of [7 GUIs](https://eugenkiss.github.io/7guis/) using [iced](h
 
 ### Flight Booker
 
-I didn't know how to disable turn the background red, so it doesn't.
+I didn't know how to turn the background red, so it doesn't.
 
 ### Timer
 
