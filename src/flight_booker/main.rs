@@ -84,6 +84,14 @@ impl FlightBooker {
             _ => self.book = false,
         }
     }
+
+    fn validate_flight(&mut self) {
+        match self.selected_flight {
+            Some(Flight::OneWay) => self.validate_one_way_flight(),
+            Some(Flight::Return) => self.validate_return_flight(),
+            None => self.book = false,
+        }
+    }
 }
 
 impl Sandbox for FlightBooker {
@@ -138,24 +146,19 @@ impl Sandbox for FlightBooker {
             Message::FlightSelected(flight) => {
                 self.selected_flight = Some(flight);
                 self.show_dialogue = false;
-
-                match self.selected_flight {
-                    Some(Flight::OneWay) => self.validate_one_way_flight(),
-                    Some(Flight::Return) => self.validate_return_flight(),
-                    None => self.book = false,
-                };
+                self.validate_flight();
             }
             Message::OneWayFlightChanged(date) => {
                 self.show_dialogue = false;
                 self.one_way_flight_date = validate_date(&date);
                 self.one_way_flight = date;
-                self.validate_one_way_flight();
+                self.validate_flight();
             }
             Message::ReturnFlightChanged(date) => {
                 self.show_dialogue = false;
                 self.return_flight_date = validate_date(&date);
                 self.return_flight = date;
-                self.validate_return_flight();
+                self.validate_flight();
             }
             Message::None(_) => {}
         }
