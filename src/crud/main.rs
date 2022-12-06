@@ -92,9 +92,10 @@ impl Sandbox for Crud {
         for name in &self.names {
             if Regex::new(&format!("^{}.*", self.filter_prefix))
                 .expect("a valid regex")
-                .is_match(&name) {
-                    self.display_names.push(name.into());
-                }
+                .is_match(name)
+            {
+                self.display_names.push(name.into());
+            }
         }
     }
 
