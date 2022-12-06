@@ -1,6 +1,7 @@
 use iced::widget::Column;
 use iced::widget::{button, column, radio, row, text_input};
 use iced::{theme, window, Alignment, Element, Sandbox, Settings};
+use regex::Regex;
 
 pub fn main() -> iced::Result {
     Crud::run(Settings {
@@ -14,10 +15,12 @@ pub fn main() -> iced::Result {
 
 #[derive(Default)]
 struct Crud {
+    filter_prefix: String,
     selected_name: Option<usize>,
     name: String,
     sur_name: String,
     names: Vec<String>,
+    display_names: Vec<String>,
     spaces: String,
 }
 
@@ -37,10 +40,12 @@ impl Sandbox for Crud {
 
     fn new() -> Self {
         Self {
+            filter_prefix: String::new(),
             selected_name: None,
             name: String::new(),
             sur_name: String::new(),
             names: Vec::new(),
+            display_names: Vec::new(),
             spaces: " ".repeat(62),
         }
     }
@@ -51,7 +56,9 @@ impl Sandbox for Crud {
 
     fn update(&mut self, message: Message) {
         match message {
-            Message::FilterPrefixChanged(_prefix) => {}
+            Message::FilterPrefixChanged(prefix) => {
+                self.filter_prefix = prefix;
+            }
             Message::SelectedName(name) => {
                 self.selected_name = Some(name);
             }
@@ -80,20 +87,29 @@ impl Sandbox for Crud {
                 self.selected_name = None;
             }
         }
+
+        self.display_names = Vec::new();
+        for name in &self.names {
+            if Regex::new(&format!("^{}.*", self.filter_prefix))
+                .expect("a valid regex")
+                .is_match(&name) {
+                    self.display_names.push(name.into());
+                }
+        }
     }
 
     fn view(&self) -> Element<Message> {
         let spaces_ref: &str = &self.spaces;
         let filter_prefix = row![
             "Filter prefix: ",
-            text_input("", &self.name, Message::FilterPrefixChanged),
+            text_input("", &self.filter_prefix, Message::FilterPrefixChanged),
             spaces_ref,
         ]
         .padding(10)
         .align_items(Alignment::Start);
 
         let mut names_col = Vec::new();
-        for (i, names) in self.names.iter().enumerate() {
+        for (i, names) in self.display_names.iter().enumerate() {
             names_col.push(radio(names, i, self.selected_name, Message::SelectedName).into());
         }
         let names_col = Column::with_children(names_col).padding(10).spacing(10);
