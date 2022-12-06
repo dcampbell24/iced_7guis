@@ -62,15 +62,15 @@ impl Sandbox for Crud {
                 self.sur_name = name;
             }
             Message::CreatePressed => {
-                if self.sur_name.is_empty() || self.name.is_empty() {
-                } else {
+                if !self.sur_name.is_empty() && !self.name.is_empty() {
                     self.names.push(format!("{}, {}", self.sur_name, self.name))
                 }
             }
             Message::UpdatePressed => {
-                if self.sur_name.is_empty() || self.name.is_empty() {
-                } else if let Some(name) = self.selected_name {
-                    self.names[name] = format!("{}, {}", self.sur_name, self.name);
+                if !self.sur_name.is_empty() && !self.name.is_empty() {
+                    if let Some(name) = self.selected_name {
+                        self.names[name] = format!("{}, {}", self.sur_name, self.name);
+                    }
                 }
             }
             Message::DeletePressed => {
