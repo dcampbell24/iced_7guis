@@ -1,7 +1,6 @@
 use iced::widget::Column;
 use iced::widget::{button, column, radio, row, text_input};
 use iced::{theme, window, Alignment, Element, Sandbox, Settings};
-use regex::Regex;
 
 pub fn main() -> iced::Result {
     Crud::run(Settings {
@@ -108,11 +107,8 @@ impl Sandbox for Crud {
 
         self.display_names = Vec::new();
         for name in &self.names {
-            if Regex::new(&format!("^{}.*", self.filter_prefix))
-                .expect("a valid regex")
-                .is_match(name)
-            {
-                self.display_names.push(name.into());
+            if name[..self.filter_prefix.len()] == self.filter_prefix {
+                self.display_names.push(name.into())
             }
         }
     }
