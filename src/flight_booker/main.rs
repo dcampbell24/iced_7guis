@@ -1,5 +1,5 @@
 use iced::widget::{button, column, container, pick_list, scrollable, text_input};
-use iced::{theme, window};
+use iced::window;
 use iced::{Alignment, Element, Length, Sandbox, Settings};
 
 use std::fmt;
@@ -182,19 +182,18 @@ impl Sandbox for FlightBooker {
             text_input(&self.one_way_flight, "", Message::None)
         };
 
-        let book = button("                            Book")
-            .on_press(Message::Book)
-            .width(Length::Fill);
+        let book = button("                            Book").width(Length::Fill);
+        let book = if self.book {
+            book.on_press(Message::Book)
+        } else {
+            book
+        };
 
         let content = column![
             pick_list,
             one_way_flight,
             return_flight,
-            if self.book {
-                book
-            } else {
-                book.style(theme::Button::Destructive)
-            },
+            book,
             if self.book && self.show_dialogue {
                 &self.dialogue_string
             } else {

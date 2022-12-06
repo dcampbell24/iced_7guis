@@ -1,6 +1,6 @@
 use iced::widget::Column;
 use iced::widget::{button, column, radio, row, text_input};
-use iced::{theme, window, Alignment, Element, Sandbox, Settings};
+use iced::{window, Alignment, Element, Sandbox, Settings};
 
 pub fn main() -> iced::Result {
     Crud::run(Settings {
@@ -138,29 +138,29 @@ impl Sandbox for Crud {
 
         let names_box = row![names_col, enter_name,];
 
-        let create = button("Create").on_press(Message::CreatePressed);
+        let create = button("Create");
         let create = if self.sur_name.is_empty() || self.name.is_empty() {
-            create.style(theme::Button::Destructive)
-        } else {
             create
+        } else {
+            create.on_press(Message::CreatePressed)
         };
 
-        let update = button("Update").on_press(Message::UpdatePressed);
+        let update = button("Update");
         let update =
             if self.sur_name.is_empty() || self.name.is_empty() || self.selected_name.is_none() {
-                update.style(theme::Button::Destructive)
-            } else {
                 update
+            } else {
+                update.on_press(Message::UpdatePressed)
             };
 
-        let delete = button("Delete").on_press(Message::DeletePressed);
+        let delete = button("Delete");
         let delete = if self.selected_name.is_none() {
-            delete.style(theme::Button::Destructive)
-        } else {
             delete
+        } else {
+            delete.on_press(Message::DeletePressed)
         };
 
-        let buttons = row![create, update, delete,]
+        let buttons = row![create, update, delete]
             .padding(10)
             .spacing(10)
             .align_items(Alignment::Start);
