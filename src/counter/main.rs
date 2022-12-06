@@ -4,7 +4,7 @@ use iced::{window, Alignment, Element, Sandbox, Settings};
 pub fn main() -> iced::Result {
     Counter::run(Settings {
         window: window::Settings {
-            size: (200, 100),
+            size: (200, 75),
             ..Default::default()
         },
         ..Default::default()
@@ -46,6 +46,7 @@ impl Sandbox for Counter {
             button("Count").on_press(Message::IncrementPressed),
         ]
         .padding(20)
+        .spacing(50)
         .align_items(Alignment::Center)
         .into()
     }
