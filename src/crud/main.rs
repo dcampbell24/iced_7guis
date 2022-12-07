@@ -69,24 +69,20 @@ impl Sandbox for Crud {
                 self.sur_name = name;
             }
             Message::CreatePressed => {
-                if !self.sur_name.is_empty() && !self.name.is_empty() {
-                    self.names.push(format!("{}, {}", self.sur_name, self.name))
-                }
+                self.names.push(format!("{}, {}", self.sur_name, self.name));
                 self.selected_name = None;
             }
             Message::UpdatePressed => {
-                if !self.sur_name.is_empty() && !self.name.is_empty() {
-                    if let Some(index) = self.selected_name {
-                        let name_chosen = &self.display_names[index];
-                        let mut j = 0;
-                        for (i, name) in self.names.iter().enumerate() {
-                            if name_chosen == name {
-                                j = i;
-                                break;
-                            }
+                if let Some(index) = self.selected_name {
+                    let name_chosen = &self.display_names[index];
+                    let mut j = 0;
+                    for (i, name) in self.names.iter().enumerate() {
+                        if name_chosen == name {
+                            j = i;
+                            break;
                         }
-                        self.names[j] = format!("{}, {}", self.sur_name, self.name);
                     }
+                    self.names[j] = format!("{}, {}", self.sur_name, self.name);
                 }
             }
             Message::DeletePressed => {
