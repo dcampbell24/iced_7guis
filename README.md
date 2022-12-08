@@ -23,6 +23,4 @@ empty.
 
 ### CRUD
 
-The dynamic layout is a bit funny. When items are created they fill the
-space and enlarge it. I could not figure out how to have a fixed layout. I
-also used radio buttons instead of normally selecting a name. 
+I used radio buttons instead of normally selecting a name. 
