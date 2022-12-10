@@ -12,23 +12,3 @@ readme = "README.md"
 
 [dependencies]
 iced = { version = "0.5.2", features = ["canvas", "tokio", "debug"] }
-
-[[bin]]
-name = "7guis_counter"
-path = "src/counter/main.rs"
-
-[[bin]]
-name = "7guis_temperature_converter"
-path = "src/temperature_converter/main.rs"
-
-[[bin]]
-name = "7guis_flight_booker"
-path = "src/flight_booker/main.rs"
-
-[[bin]]
-name = "7guis_timer"
-path = "src/timer/main.rs"
-
-[[bin]]
-name = "7guis_crud"
-path = "src/crud/main.rs"
