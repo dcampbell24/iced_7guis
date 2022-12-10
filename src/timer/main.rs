@@ -109,7 +109,7 @@ impl Application for Timer {
 
         let duration = row![
             "Duration: ",
-            slider(0.0..=60.0, self.duration_max, Message::SliderChanged),
+            slider(0.0001..=60.0, self.duration_max, Message::SliderChanged),
         ]
         .padding(10);
 

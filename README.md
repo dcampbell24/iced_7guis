@@ -16,10 +16,6 @@ An implementation of [7 GUIs](https://eugenkiss.github.io/7guis/) using [iced](h
 
 I didn't know how to turn the background red, so it doesn't.
 
-### Timer
-
-For some reason when the duration is brought to a minimum the elapsed time progress bar becomes
-empty.
 
 ### CRUD
 
