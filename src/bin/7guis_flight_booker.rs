@@ -127,14 +127,11 @@ impl Sandbox for FlightBooker {
                     },
                 };
 
-                let one_way_string = format!(
-                    "You have booked a one-way flight on {:}",
-                    one_way_flight_date,
-                );
+                let one_way_string =
+                    format!("You have booked a one-way flight on {one_way_flight_date}");
 
                 let return_string = format!(
-                    "You have booked a flight leaving on {:} and returning on {:}",
-                    one_way_flight_date, return_flight_date
+                    "You have booked a flight leaving on {one_way_flight_date} and returning on {return_flight_date}"
                 );
 
                 match self.selected_flight {
