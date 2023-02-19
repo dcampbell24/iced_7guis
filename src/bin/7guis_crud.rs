@@ -124,8 +124,8 @@ impl Sandbox for Crud {
             names_col.push(radio(names, i, self.selected_name, Message::SelectedName).into());
         }
         let names_col = Column::with_children(names_col).padding(10).spacing(10);
-        let names_col = scrollable(names_col).height(iced::Length::Units(200));
-        let names_col = container(names_col).width(iced::Length::Units(300));
+        let names_col = scrollable(names_col).height(iced::Length::Fixed(200.0));
+        let names_col = container(names_col).width(iced::Length::Fixed(300.0));
 
         let name = row!["Name", text_input("", &self.name, Message::NameChanged),];
         let surname = row![

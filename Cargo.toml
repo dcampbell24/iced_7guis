@@ -11,4 +11,4 @@ repository = "https://github.com/dcampbell24/iced_7guis"
 readme = "README.md"
 
 [dependencies]
-iced = { version = "0.5.2", features = ["canvas", "tokio", "debug"] }
+iced = { version = "0.8", features = ["canvas", "tokio", "debug"] }
