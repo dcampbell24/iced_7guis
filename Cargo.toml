@@ -4,6 +4,7 @@ description = "An implementation of 7 GUIs using iced."
 version = "0.1.0"
 edition = "2021"
 license = "MIT OR Apache-2.0"
+categories = ["gui"]
 keywords = ["7guis"]
 # documentation = "https://docs.rs/iced_7guis"
 homepage = "https://eugenkiss.github.io/7guis/"
@@ -16,5 +17,3 @@ iced = { version = "0.8", features = ["canvas", "tokio", "debug"] }
 [lints.clippy]
 cargo = "warn"
 pedantic = "warn"
-
-# multiple_crate_versions = { level = "allow", priority = 1 }

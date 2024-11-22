@@ -61,7 +61,7 @@ enum Message {
     FlightSelected(Flight),
     OneWayFlightChanged(String),
     ReturnFlightChanged(String),
-    None(String),
+    None(()),
 }
 
 impl FlightBooker {
@@ -75,11 +75,7 @@ impl FlightBooker {
     fn validate_return_flight(&mut self) {
         match (&self.one_way_flight_date, &self.return_flight_date) {
             (Some((day_1, month_1, year_1)), Some((day_2, month_2, year_2))) => {
-                if year_2 >= year_1 && month_2 >= month_1 && day_2 >= day_1 {
-                    self.book = true;
-                } else {
-                    self.book = false;
-                }
+                self.book = year_2 >= year_1 && month_2 >= month_1 && day_2 >= day_1;
             }
             _ => self.book = false,
         }
@@ -157,7 +153,7 @@ impl Sandbox for FlightBooker {
                 self.return_flight = date;
                 self.validate_flight();
             }
-            Message::None(_) => {}
+            Message::None(()) => {}
         }
     }
 
@@ -176,7 +172,7 @@ impl Sandbox for FlightBooker {
         let return_flight = if self.selected_flight == Some(Flight::Return) {
             text_input("", &self.return_flight, Message::ReturnFlightChanged)
         } else {
-            text_input(&self.one_way_flight, "", Message::None)
+            text_input(&self.one_way_flight, "", |_arg| Message::None(()))
         };
 
         let book = button("                            Book").width(Length::Fill);
@@ -277,7 +273,7 @@ fn validate_date(date: &str) -> Option<(u32, u32, u32)> {
     }
 
     match month {
-        1 => match day {
+        1 | 3 | 5 | 7 | 8 | 10 | 12 => match day {
             1..=31 => (),
             _ => return None,
         },
@@ -296,44 +292,8 @@ fn validate_date(date: &str) -> Option<(u32, u32, u32)> {
             }
         }
 
-        3 => match day {
-            1..=31 => (),
-            _ => return None,
-        },
-        4 => match day {
+        4 | 6 | 9 | 11 => match day {
             1..=30 => (),
-            _ => return None,
-        },
-        5 => match day {
-            1..=31 => (),
-            _ => return None,
-        },
-        6 => match day {
-            1..=30 => (),
-            _ => return None,
-        },
-        7 => match day {
-            1..=31 => (),
-            _ => return None,
-        },
-        8 => match day {
-            1..=31 => (),
-            _ => return None,
-        },
-        9 => match day {
-            1..=30 => (),
-            _ => return None,
-        },
-        10 => match day {
-            1..=31 => (),
-            _ => return None,
-        },
-        11 => match day {
-            1..=30 => (),
-            _ => return None,
-        },
-        12 => match day {
-            1..=31 => (),
             _ => return None,
         },
         _ => return None,
