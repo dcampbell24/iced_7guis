@@ -25,8 +25,8 @@ enum Message {
 
 impl TemperatureConverter {
     fn empty(&mut self) {
-        self.celsius = "".into();
-        self.fahrenheit = "".into();
+        self.celsius = String::new();
+        self.fahrenheit = String::new();
     }
 }
 
@@ -35,8 +35,8 @@ impl Sandbox for TemperatureConverter {
 
     fn new() -> Self {
         Self {
-            celsius: "".into(),
-            fahrenheit: "".into(),
+            celsius: String::new(),
+            fahrenheit: String::new(),
         }
     }
 
@@ -50,7 +50,7 @@ impl Sandbox for TemperatureConverter {
                 if s.is_empty() {
                     self.empty();
                 } else {
-                    self.celsius = s.clone();
+                    self.celsius.clone_from(&s);
                     match s.parse::<f64>() {
                         Ok(celsius) => {
                             let fahrenheit = celsius * (9. / 5.) + 32.;
@@ -64,7 +64,7 @@ impl Sandbox for TemperatureConverter {
                 if s.is_empty() {
                     self.empty();
                 } else {
-                    self.fahrenheit = s.clone();
+                    self.fahrenheit.clone_from(&s);
                     match s.parse::<f64>() {
                         Ok(fahrenheit) => {
                             let celsius = (fahrenheit - 32.) * (5. / 9.);

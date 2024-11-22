@@ -104,7 +104,7 @@ impl Sandbox for Crud {
         self.display_names = Vec::new();
         for name in &self.names {
             if name[..self.filter_prefix.len()] == self.filter_prefix {
-                self.display_names.push(name.into())
+                self.display_names.push(name.into());
             }
         }
     }

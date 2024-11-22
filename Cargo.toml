@@ -12,3 +12,9 @@ readme = "README.md"
 
 [dependencies]
 iced = { version = "0.8", features = ["canvas", "tokio", "debug"] }
+
+[lints.clippy]
+cargo = "warn"
+pedantic = "warn"
+
+# multiple_crate_versions = { level = "allow", priority = 1 }

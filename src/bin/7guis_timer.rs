@@ -45,7 +45,7 @@ impl Application for Timer {
                 t1: Instant::now(),
                 time: Vec::new(),
                 starting: true,
-                duration: Default::default(),
+                duration: Duration::default(),
                 duration_max: 20.0,
                 elapsed_time: Default::default(),
             },

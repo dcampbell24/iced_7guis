@@ -44,13 +44,13 @@ impl Default for FlightBooker {
     fn default() -> Self {
         FlightBooker {
             selected_flight: Some(Flight::OneWay),
-            one_way_flight: "".into(),
+            one_way_flight: String::new(),
             one_way_flight_date: None,
-            return_flight: "".into(),
+            return_flight: String::new(),
             return_flight_date: None,
             book: false,
             show_dialogue: false,
-            dialogue_string: "".into(),
+            dialogue_string: String::new(),
         }
     }
 }
@@ -76,9 +76,9 @@ impl FlightBooker {
         match (&self.one_way_flight_date, &self.return_flight_date) {
             (Some((day_1, month_1, year_1)), Some((day_2, month_2, year_2))) => {
                 if year_2 >= year_1 && month_2 >= month_1 && day_2 >= day_1 {
-                    self.book = true
+                    self.book = true;
                 } else {
-                    self.book = false
+                    self.book = false;
                 }
             }
             _ => self.book = false,
@@ -137,7 +137,7 @@ impl Sandbox for FlightBooker {
                 match self.selected_flight {
                     Some(Flight::OneWay) => self.dialogue_string = one_way_string,
                     Some(Flight::Return) => self.dialogue_string = return_string,
-                    None => self.dialogue_string = "".into(),
+                    None => self.dialogue_string = String::new(),
                 }
             }
             Message::FlightSelected(flight) => {
@@ -210,20 +210,15 @@ impl Sandbox for FlightBooker {
     }
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Default, Clone, Copy, PartialEq, Eq)]
 pub enum Flight {
+    #[default]
     OneWay,
     Return,
 }
 
 impl Flight {
     const ALL: [Flight; 2] = [Flight::OneWay, Flight::Return];
-}
-
-impl Default for Flight {
-    fn default() -> Flight {
-        Flight::OneWay
-    }
 }
 
 impl std::fmt::Display for Flight {
@@ -278,11 +273,7 @@ fn validate_date(date: &str) -> Option<(u32, u32, u32)> {
     let mut leap_year = year % 4 == 0;
 
     if year % 100 == 0 {
-        if year % 400 == 0 {
-            leap_year = true;
-        } else {
-            leap_year = false;
-        }
+        leap_year = year % 400 == 0;
     }
 
     match month {
