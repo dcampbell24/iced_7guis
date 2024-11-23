@@ -1,14 +1,20 @@
 use iced::widget::{row, text, text_input};
-use iced::{window, Alignment, Element, Sandbox, Settings};
+use iced::{window, Alignment, Element, Size};
 
 pub fn main() -> iced::Result {
-    TemperatureConverter::run(Settings {
-        window: window::Settings {
-            size: (600, 80),
-            ..Default::default()
+    iced::application(
+        "Temperature Converter",
+        TemperatureConverter::update,
+        TemperatureConverter::view,
+    )
+    .window(window::Settings {
+        size: Size {
+            width: 600.0,
+            height: 80.0,
         },
         ..Default::default()
     })
+    .run()
 }
 
 #[derive(Default)]
@@ -27,21 +33,6 @@ impl TemperatureConverter {
     fn empty(&mut self) {
         self.celsius = String::new();
         self.fahrenheit = String::new();
-    }
-}
-
-impl Sandbox for TemperatureConverter {
-    type Message = Message;
-
-    fn new() -> Self {
-        Self {
-            celsius: String::new(),
-            fahrenheit: String::new(),
-        }
-    }
-
-    fn title(&self) -> String {
-        String::from("Temperature Converter")
     }
 
     fn update(&mut self, message: Message) {
@@ -79,13 +70,13 @@ impl Sandbox for TemperatureConverter {
 
     fn view(&self) -> Element<Message> {
         row![
-            text_input("", &self.celsius, Message::CelsiusChanged),
-            text("Celsius =").size(50),
-            text_input("", &self.fahrenheit, Message::FahrenheitChanged),
-            text("Fahrenheit").size(50),
+            text_input("", &self.celsius).on_input(Message::CelsiusChanged),
+            text(" Celsius = "),
+            text_input("", &self.fahrenheit).on_input(Message::FahrenheitChanged),
+            text(" Fahrenheit"),
         ]
         .padding(20)
-        .align_items(Alignment::Center)
+        .align_y(Alignment::Center)
         .into()
     }
 }

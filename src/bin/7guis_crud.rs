@@ -1,15 +1,17 @@
 use iced::widget::{button, column, radio, row, scrollable, text_input};
 use iced::widget::{container, Column};
-use iced::{window, Alignment, Element, Sandbox, Settings};
+use iced::{window, Alignment, Element, Size};
 
 pub fn main() -> iced::Result {
-    Crud::run(Settings {
-        window: window::Settings {
-            size: (580, 280),
+    iced::application("CRUD", Crud::update, Crud::view)
+        .window(window::Settings {
+            size: Size {
+                width: 580.0,
+                height: 300.0,
+            },
             ..Default::default()
-        },
-        ..Default::default()
-    })
+        })
+        .run()
 }
 
 #[derive(Default)]
@@ -20,7 +22,6 @@ struct Crud {
     sur_name: String,
     names: Vec<String>,
     display_names: Vec<String>,
-    spaces: String,
 }
 
 #[derive(Clone, Debug)]
@@ -34,25 +35,7 @@ enum Message {
     DeletePressed,
 }
 
-impl Sandbox for Crud {
-    type Message = Message;
-
-    fn new() -> Self {
-        Self {
-            filter_prefix: String::new(),
-            selected_name: None,
-            name: String::new(),
-            sur_name: String::new(),
-            names: Vec::new(),
-            display_names: Vec::new(),
-            spaces: " ".repeat(90),
-        }
-    }
-
-    fn title(&self) -> String {
-        String::from("CRUD")
-    }
-
+impl Crud {
     fn update(&mut self, message: Message) {
         match message {
             Message::FilterPrefixChanged(prefix) => {
@@ -110,14 +93,12 @@ impl Sandbox for Crud {
     }
 
     fn view(&self) -> Element<Message> {
-        let spaces_ref: &str = &self.spaces;
         let filter_prefix = row![
             "Filter prefix: ",
-            text_input("", &self.filter_prefix, Message::FilterPrefixChanged),
-            spaces_ref,
+            text_input("", &self.filter_prefix).on_input(Message::FilterPrefixChanged),
         ]
         .padding(10)
-        .align_items(Alignment::Start);
+        .align_y(Alignment::Start);
 
         let mut names_col = Vec::new();
         for (i, names) in self.display_names.iter().enumerate() {
@@ -127,10 +108,13 @@ impl Sandbox for Crud {
         let names_col = scrollable(names_col).height(iced::Length::Fixed(200.0));
         let names_col = container(names_col).width(iced::Length::Fixed(300.0));
 
-        let name = row!["Name", text_input("", &self.name, Message::NameChanged),];
+        let name = row![
+            "Name",
+            text_input("", &self.name).on_input(Message::NameChanged)
+        ];
         let surname = row![
             "Surname",
-            text_input("", &self.sur_name, Message::SurnameChanged),
+            text_input("", &self.sur_name).on_input(Message::SurnameChanged),
         ];
         let enter_name = column![name, surname].padding(10).spacing(10);
 
@@ -161,10 +145,10 @@ impl Sandbox for Crud {
         let buttons = row![create, update, delete]
             .padding(10)
             .spacing(10)
-            .align_items(Alignment::Start);
+            .align_y(Alignment::Start);
 
         column![filter_prefix, names_box, buttons]
-            .align_items(Alignment::Start)
+            .align_x(Alignment::Start)
             .into()
     }
 }

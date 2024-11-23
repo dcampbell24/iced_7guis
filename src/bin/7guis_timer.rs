@@ -1,23 +1,38 @@
-use iced::executor;
 use iced::widget::{button, column, progress_bar, row, slider, text};
-use iced::{window, Application, Command, Element, Settings, Subscription, Theme};
+use iced::{window, Element, Size, Subscription};
 
 use std::time::{Duration, Instant};
 
 pub fn main() -> iced::Result {
-    Timer::run(Settings {
-        window: window::Settings {
-            size: (200, 180),
+    iced::application("Timer", Timer::update, Timer::view)
+        .window(window::Settings {
+            size: Size {
+                width: 200.0,
+                height: 180.0,
+            },
             ..Default::default()
-        },
-        ..Default::default()
-    })
+        })
+        .subscription(Timer::run_timer)
+        .run()
 }
 
 #[derive(Debug)]
+struct InstantExt {
+    inner: Instant,
+}
+
+impl Default for InstantExt {
+    fn default() -> Self {
+        InstantExt {
+            inner: Instant::now(),
+        }
+    }
+}
+
+#[derive(Debug, Default)]
 struct Timer {
-    t0: Instant,
-    t1: Instant,
+    t0: InstantExt,
+    t1: InstantExt,
     time: Vec<Duration>,
     starting: bool,
     duration: Duration,
@@ -32,36 +47,12 @@ enum Message {
     Tick(Instant),
 }
 
-impl Application for Timer {
-    type Executor = executor::Default;
-    type Message = Message;
-    type Theme = Theme;
-    type Flags = ();
-
-    fn new(_flags: ()) -> (Self, Command<Message>) {
-        (
-            Timer {
-                t0: Instant::now(),
-                t1: Instant::now(),
-                time: Vec::new(),
-                starting: true,
-                duration: Duration::default(),
-                duration_max: 20.0,
-                elapsed_time: Default::default(),
-            },
-            Command::none(),
-        )
-    }
-
-    fn title(&self) -> String {
-        String::from("Timer")
-    }
-
-    fn update(&mut self, message: Message) -> iced::Command<Message> {
+impl Timer {
+    fn update(&mut self, message: Message) {
         match message {
             Message::Reset => {
                 self.time.clear();
-                self.t0 = Instant::now();
+                self.t0 = InstantExt::default();
                 self.starting = true;
             }
             Message::SliderChanged(max) => {
@@ -69,33 +60,32 @@ impl Application for Timer {
 
                 if self.starting && self.elapsed_time >= max {
                     self.starting = false;
-                    self.time.push(self.t1 - self.t0);
+                    self.time.push(self.t1.inner - self.t0.inner);
                 }
 
                 if !self.starting && self.elapsed_time < max {
                     self.starting = true;
-                    self.t0 = Instant::now();
+                    self.t0 = InstantExt::default();
                 }
             }
             Message::Tick(instant) => {
                 if self.starting {
-                    self.t1 = instant;
+                    self.t1 = InstantExt { inner: instant };
 
                     if self.elapsed_time >= self.duration_max {
                         self.starting = false;
-                        self.time.push(self.t1 - self.t0);
+                        self.time.push(self.t1.inner - self.t0.inner);
                     }
                 }
 
                 self.duration = self.time.iter().sum();
                 if self.starting {
-                    self.duration += self.t1 - self.t0;
+                    self.duration += self.t1.inner - self.t0.inner;
                 }
 
                 self.elapsed_time = self.duration.as_secs_f32();
             }
         }
-        Command::none()
     }
 
     fn view(&self) -> Element<Message> {
@@ -118,7 +108,7 @@ impl Application for Timer {
         column![elapsed_time, time_seconds, duration, reset,].into()
     }
 
-    fn subscription(&self) -> Subscription<Message> {
+    fn run_timer(_self: &Self) -> Subscription<Message> {
         iced::time::every(Duration::from_millis(100)).map(|_| Message::Tick(Instant::now()))
     }
 }

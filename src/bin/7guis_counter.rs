@@ -1,14 +1,16 @@
 use iced::widget::{button, row, text};
-use iced::{window, Alignment, Element, Sandbox, Settings};
+use iced::{window, Alignment, Element, Size};
 
 pub fn main() -> iced::Result {
-    Counter::run(Settings {
-        window: window::Settings {
-            size: (200, 75),
+    iced::application("Counter", Counter::update, Counter::view)
+        .window(window::Settings {
+            size: Size {
+                width: 200.0,
+                height: 110.0,
+            },
             ..Default::default()
-        },
-        ..Default::default()
-    })
+        })
+        .run()
 }
 
 #[derive(Default)]
@@ -21,17 +23,7 @@ enum Message {
     IncrementPressed,
 }
 
-impl Sandbox for Counter {
-    type Message = Message;
-
-    fn new() -> Self {
-        Self { value: 0 }
-    }
-
-    fn title(&self) -> String {
-        String::from("Counter")
-    }
-
+impl Counter {
     fn update(&mut self, message: Message) {
         match message {
             Message::IncrementPressed => {
@@ -47,7 +39,7 @@ impl Sandbox for Counter {
         ]
         .padding(20)
         .spacing(50)
-        .align_items(Alignment::Center)
+        .align_y(Alignment::Center)
         .into()
     }
 }

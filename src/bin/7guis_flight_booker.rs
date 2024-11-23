@@ -1,17 +1,19 @@
 use iced::widget::{button, column, container, pick_list, scrollable, text_input};
-use iced::window;
-use iced::{Alignment, Element, Length, Sandbox, Settings};
+use iced::{window, Size};
+use iced::{Alignment, Element, Length};
 
 use std::fmt;
 
 pub fn main() -> iced::Result {
-    FlightBooker::run(Settings {
-        window: window::Settings {
-            size: (200, 200),
+    iced::application("Flight Booker", FlightBooker::update, FlightBooker::view)
+        .window(window::Settings {
+            size: Size {
+                width: 300.0,
+                height: 250.0,
+            },
             ..Default::default()
-        },
-        ..Default::default()
-    })
+        })
+        .run()
 }
 
 type Date = (u32, u32, u32);
@@ -29,8 +31,9 @@ impl fmt::Display for PrettyDate {
     }
 }
 
+#[derive(Default)]
 struct FlightBooker {
-    selected_flight: Option<Flight>,
+    selected_flight: Flight,
     one_way_flight: String,
     one_way_flight_date: Option<Date>,
     return_flight: String,
@@ -38,21 +41,7 @@ struct FlightBooker {
     book: bool,
     show_dialogue: bool,
     dialogue_string: String,
-}
-
-impl Default for FlightBooker {
-    fn default() -> Self {
-        FlightBooker {
-            selected_flight: Some(Flight::OneWay),
-            one_way_flight: String::new(),
-            one_way_flight_date: None,
-            return_flight: String::new(),
-            return_flight_date: None,
-            book: false,
-            show_dialogue: false,
-            dialogue_string: String::new(),
-        }
-    }
+    red_background: bool,
 }
 
 #[derive(Debug, Clone)]
@@ -61,7 +50,6 @@ enum Message {
     FlightSelected(Flight),
     OneWayFlightChanged(String),
     ReturnFlightChanged(String),
-    None(()),
 }
 
 impl FlightBooker {
@@ -83,22 +71,15 @@ impl FlightBooker {
 
     fn validate_flight(&mut self) {
         match self.selected_flight {
-            Some(Flight::OneWay) => self.validate_one_way_flight(),
-            Some(Flight::Return) => self.validate_return_flight(),
-            None => self.book = false,
+            Flight::OneWay => {
+                self.validate_one_way_flight();
+                if !self.one_way_flight.is_empty() && !self.book {
+                    self.red_background = true;
+                }
+            }
+            // Fixme: return flights are also supposed to make a red background when invalid.
+            Flight::Return => self.validate_return_flight(),
         }
-    }
-}
-
-impl Sandbox for FlightBooker {
-    type Message = Message;
-
-    fn new() -> Self {
-        Self::default()
-    }
-
-    fn title(&self) -> String {
-        "Flight Booker".into()
     }
 
     fn update(&mut self, message: Message) {
@@ -131,13 +112,12 @@ impl Sandbox for FlightBooker {
                 );
 
                 match self.selected_flight {
-                    Some(Flight::OneWay) => self.dialogue_string = one_way_string,
-                    Some(Flight::Return) => self.dialogue_string = return_string,
-                    None => self.dialogue_string = String::new(),
+                    Flight::OneWay => self.dialogue_string = one_way_string,
+                    Flight::Return => self.dialogue_string = return_string,
                 }
             }
             Message::FlightSelected(flight) => {
-                self.selected_flight = Some(flight);
+                self.selected_flight = flight;
                 self.show_dialogue = false;
                 self.validate_flight();
             }
@@ -153,26 +133,28 @@ impl Sandbox for FlightBooker {
                 self.return_flight = date;
                 self.validate_flight();
             }
-            Message::None(()) => {}
         }
     }
 
     fn view(&self) -> Element<Message> {
         let pick_list = pick_list(
             &Flight::ALL[..],
-            self.selected_flight,
+            Some(self.selected_flight),
             Message::FlightSelected,
         )
         .width(Length::Fill);
 
-        // When there is an error, supposed to make the background red.
-        // let one_way_flight = if !self.one_way_flight.is_empty() && self.one_way_flight_date.is_none() {
-        let one_way_flight = text_input("", &self.one_way_flight, Message::OneWayFlightChanged);
+        let one_way_flight = text_input("choose a flight date", &self.one_way_flight)
+            .on_input(Message::OneWayFlightChanged);
+        if self.red_background {
+            // Set the background red.
+        }
 
-        let return_flight = if self.selected_flight == Some(Flight::Return) {
-            text_input("", &self.return_flight, Message::ReturnFlightChanged)
+        let return_flight = if self.selected_flight == Flight::Return {
+            text_input("choose a flight date", &self.return_flight)
+                .on_input(Message::ReturnFlightChanged)
         } else {
-            text_input(&self.one_way_flight, "", |_arg| Message::None(()))
+            text_input("", &self.one_way_flight)
         };
 
         let book = button("                            Book").width(Length::Fill);
@@ -194,14 +176,12 @@ impl Sandbox for FlightBooker {
             }
         ]
         .width(Length::Fill)
-        .align_items(Alignment::Center)
+        .align_x(Alignment::Center)
         .spacing(10);
 
         container(scrollable(content))
             .width(Length::Fill)
             .height(Length::Fill)
-            .center_x()
-            .center_y()
             .into()
     }
 }
