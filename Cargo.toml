@@ -13,6 +13,8 @@ repository = "https://github.com/dcampbell24/iced_7guis"
 readme = "README.md"
 
 [dependencies]
+anyhow = "1"
+chrono = "0.4"
 iced = { version = "0.14", features = ["canvas", "tokio", "debug"] }
 
 [lints.clippy]

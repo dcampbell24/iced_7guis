@@ -1,8 +1,10 @@
+use chrono::offset::LocalResult;
+use chrono::{DateTime, TimeZone, Utc};
+// use iced::widget::text_input::Style;
 use iced::widget::{button, column, container, pick_list, scrollable, text_input};
 use iced::{window, Size};
+// use iced::{color, window, Background, Size};
 use iced::{Alignment, Element, Length};
-
-use std::fmt;
 
 /// # Errors
 ///
@@ -24,32 +26,17 @@ pub fn main() -> iced::Result {
     .run()
 }
 
-type Date = (u32, u32, u32);
-
-#[derive(Clone, Debug)]
-struct PrettyDate {
-    day: u32,
-    month: u32,
-    year: u32,
-}
-
-impl fmt::Display for PrettyDate {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "{:02}.{:02}.{:04}", self.day, self.month, self.year)
-    }
-}
-
 #[derive(Default)]
 struct FlightBooker {
     selected_flight: Flight,
     one_way_flight: String,
-    one_way_flight_date: Option<Date>,
+    one_way_flight_date: Option<DateTime<Utc>>,
     return_flight: String,
-    return_flight_date: Option<Date>,
+    return_flight_date: Option<DateTime<Utc>>,
     book: bool,
     show_dialogue: bool,
     dialogue_string: String,
-    red_background: bool,
+    _red_background: bool,
 }
 
 #[derive(Debug, Clone)]
@@ -61,87 +48,90 @@ enum Message {
 }
 
 impl FlightBooker {
-    fn validate_one_way_flight(&mut self) {
-        match &self.one_way_flight_date {
-            Some(_) => self.book = true,
-            None => self.book = false,
-        }
+    fn _print_flights(&self) {
+        println!(
+            "flight: {}, return_flight: {}",
+            self.one_way_flight, self.return_flight
+        );
     }
 
-    fn validate_return_flight(&mut self) {
-        match (&self.one_way_flight_date, &self.return_flight_date) {
-            (Some((day_1, month_1, year_1)), Some((day_2, month_2, year_2))) => {
-                self.book = year_2 >= year_1 && month_2 >= month_1 && day_2 >= day_1;
-            }
-            _ => self.book = false,
-        }
-    }
-
-    fn validate_flight(&mut self) {
+    fn validate_flights(&mut self) -> anyhow::Result<()> {
         match self.selected_flight {
-            Flight::OneWay => {
-                self.validate_one_way_flight();
-                if !self.one_way_flight.is_empty() && !self.book {
-                    self.red_background = true;
+            Flight::OneWay => match validate_flight(&self.one_way_flight) {
+                Ok(flight) => {
+                    self.one_way_flight_date = Some(flight);
+                    Ok(())
+                }
+                Err(error) => {
+                    self.one_way_flight_date = None;
+                    Err(error)
+                }
+            },
+            Flight::Return => {
+                if let (Ok(flight), Ok(return_flight)) = (
+                    validate_flight(&self.one_way_flight),
+                    validate_flight(&self.return_flight),
+                ) {
+                    self.one_way_flight_date = Some(flight);
+                    self.return_flight_date = Some(return_flight);
+
+                    if self.one_way_flight_date <= self.return_flight_date {
+                        Ok(())
+                    } else {
+                        Err(anyhow::Error::msg(
+                            "the return flight date is before the flight date",
+                        ))
+                    }
+                } else {
+                    self.one_way_flight_date = None;
+                    self.return_flight_date = None;
+                    Err(anyhow::Error::msg("invalid date"))
                 }
             }
-            // Fixme: return flights are also supposed to make a red background when invalid.
-            Flight::Return => self.validate_return_flight(),
         }
     }
 
     fn update(&mut self, message: Message) {
         match message {
             Message::Book => {
-                self.show_dialogue = true;
+                if let Err(error) = self.validate_flights() {
+                    self.show_dialogue = false;
+                    eprintln!("error: {error}");
+                } else {
+                    self.show_dialogue = true;
+                    let one_way_string = format!(
+                        "You have booked a one-way flight on {}",
+                        self.one_way_flight
+                    );
 
-                let one_way_flight_date = match self.one_way_flight_date {
-                    Some((day, month, year)) => PrettyDate { day, month, year },
-                    None => PrettyDate {
-                        day: 0,
-                        month: 0,
-                        year: 0,
-                    },
-                };
-                let return_flight_date = match self.return_flight_date {
-                    Some((day, month, year)) => PrettyDate { day, month, year },
-                    None => PrettyDate {
-                        day: 0,
-                        month: 0,
-                        year: 0,
-                    },
-                };
+                    let return_string = format!(
+                        "You have booked a flight leaving on {} and returning on {}",
+                        self.one_way_flight, self.return_flight,
+                    );
 
-                let one_way_string =
-                    format!("You have booked a one-way flight on {one_way_flight_date}");
-
-                let return_string = format!(
-                    "You have booked a flight leaving on {one_way_flight_date} and returning on {return_flight_date}"
-                );
-
-                match self.selected_flight {
-                    Flight::OneWay => self.dialogue_string = one_way_string,
-                    Flight::Return => self.dialogue_string = return_string,
+                    match self.selected_flight {
+                        Flight::OneWay => self.dialogue_string = one_way_string,
+                        Flight::Return => self.dialogue_string = return_string,
+                    }
                 }
             }
             Message::FlightSelected(flight) => {
-                self.selected_flight = flight;
                 self.show_dialogue = false;
-                self.validate_flight();
+                self.selected_flight = flight;
+                self.book = self.validate_flights().is_ok();
             }
             Message::OneWayFlightChanged(date) => {
                 self.show_dialogue = false;
-                self.one_way_flight_date = validate_date(&date);
                 self.one_way_flight = date;
-                self.validate_flight();
+                self.book = self.validate_flights().is_ok();
             }
             Message::ReturnFlightChanged(date) => {
                 self.show_dialogue = false;
-                self.return_flight_date = validate_date(&date);
                 self.return_flight = date;
-                self.validate_flight();
             }
         }
+
+        // self.print_flights();
     }
 
     fn view(&self) -> Element<'_, Message> {
@@ -154,9 +144,6 @@ impl FlightBooker {
 
         let one_way_flight = text_input("choose a flight date", &self.one_way_flight)
             .on_input(Message::OneWayFlightChanged);
-        if self.red_background {
-            // Set the background red.
-        }
 
         let return_flight = if self.selected_flight == Flight::Return {
             text_input("choose a flight date", &self.return_flight)
@@ -164,6 +151,28 @@ impl FlightBooker {
         } else {
             text_input("", &self.one_way_flight)
         };
+
+        /*
+        if self.red_background {
+            return_flight = return_flight.style(|_state, _theme| Style {
+                background: Background::Color(color!(255, 0, 0)),
+                border: Default::default(),
+                icon: Default::default(),
+                placeholder: Default::default(),
+                value: Default::default(),
+                selection: Default::default(),
+            })
+        } else {
+            return_flight = return_flight.style(|_state, _theme| Style {
+                background: Background::Color(Default::default()),
+                border: Default::default(),
+                icon: Default::default(),
+                placeholder: Default::default(),
+                value: Default::default(),
+                selection: Default::default(),
+            })
+        }
+        */
 
         let book = button("                            Book").width(Length::Fill);
         let book = if self.book {
@@ -219,74 +228,23 @@ impl std::fmt::Display for Flight {
     }
 }
 
-fn validate_date(date: &str) -> Option<(u32, u32, u32)> {
-    let date = date.split('.').collect::<Vec<_>>();
-    if date.len() != 3 {
-        return None;
-    }
-
-    let day = match date[0].parse::<u32>() {
-        Ok(num) => {
-            if num == 0 {
-                return None;
-            }
-            num
-        }
-        Err(_) => return None,
+fn validate_flight(string: &str) -> anyhow::Result<DateTime<Utc>> {
+    let mut year_month_day = string.split('.');
+    let Some(year) = year_month_day.next() else {
+        return Err(anyhow::Error::msg("invalid year string"));
+    };
+    let Some(month) = year_month_day.next() else {
+        return Err(anyhow::Error::msg("invalid month string"));
+    };
+    let Some(day) = year_month_day.next() else {
+        return Err(anyhow::Error::msg("invalid day string"));
     };
 
-    let month = match date[1].parse::<u32>() {
-        Ok(num) => {
-            if num == 0 {
-                return None;
-            }
-            num
-        }
-        Err(_) => return None,
-    };
-
-    let year = match date[2].parse::<u32>() {
-        Ok(num) => {
-            if num == 0 {
-                return None;
-            }
-            num
-        }
-        Err(_) => return None,
-    };
-
-    let mut leap_year = year % 4 == 0;
-
-    if year % 100 == 0 {
-        leap_year = year % 400 == 0;
+    if let LocalResult::Single(flight_date) =
+        Utc.with_ymd_and_hms(year.parse()?, month.parse()?, day.parse()?, 0, 0, 0)
+    {
+        Ok(flight_date)
+    } else {
+        Err(anyhow::Error::msg("invalid time string"))
     }
-
-    match month {
-        1 | 3 | 5 | 7 | 8 | 10 | 12 => match day {
-            1..=31 => (),
-            _ => return None,
-        },
-
-        2 => {
-            if leap_year {
-                match day {
-                    1..=29 => (),
-                    _ => return None,
-                }
-            } else {
-                match day {
-                    1..=28 => (),
-                    _ => return None,
-                }
-            }
-        }
-
-        4 | 6 | 9 | 11 => match day {
-            1..=30 => (),
-            _ => return None,
-        },
-        _ => return None,
-    }
-
-    Some((day, month, year))
 }
