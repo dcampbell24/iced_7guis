@@ -1,7 +1,7 @@
 use chrono::offset::LocalResult;
 use chrono::{DateTime, TimeZone, Utc};
 // use iced::widget::text_input::Style;
-use iced::widget::{button, column, container, pick_list, scrollable, text_input};
+use iced::widget::{button, column, container, pick_list, scrollable, text, text_input};
 use iced::{window, Size};
 // use iced::{color, window, Background, Size};
 use iced::{Alignment, Element, Length};
@@ -174,7 +174,7 @@ impl FlightBooker {
         }
         */
 
-        let mut book = button("                            Book").width(Length::Fill);
+        let mut book = button(text("Book").center().width(Length::Fill)).width(Length::Fill);
         if self.book {
             book = book.on_press(Message::Book);
         }
