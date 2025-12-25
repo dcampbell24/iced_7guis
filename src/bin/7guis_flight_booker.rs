@@ -1,9 +1,7 @@
 use chrono::offset::LocalResult;
 use chrono::{DateTime, TimeZone, Utc};
-// use iced::widget::text_input::Style;
 use iced::widget::{button, column, container, pick_list, scrollable, text, text_input};
 use iced::{window, Size};
-// use iced::{color, window, Background, Size};
 use iced::{Alignment, Element, Length};
 
 /// # Errors
@@ -36,7 +34,6 @@ struct FlightBooker {
     book: bool,
     show_dialogue: bool,
     dialogue_string: String,
-    _red_background: bool,
 }
 
 #[derive(Debug, Clone)]
@@ -151,28 +148,6 @@ impl FlightBooker {
         } else {
             text_input("", &self.one_way_flight)
         };
-
-        /*
-        if self.red_background {
-            return_flight = return_flight.style(|_state, _theme| Style {
-                background: Background::Color(color!(255, 0, 0)),
-                border: Default::default(),
-                icon: Default::default(),
-                placeholder: Default::default(),
-                value: Default::default(),
-                selection: Default::default(),
-            })
-        } else {
-            return_flight = return_flight.style(|_state, _theme| Style {
-                background: Background::Color(Default::default()),
-                border: Default::default(),
-                icon: Default::default(),
-                placeholder: Default::default(),
-                value: Default::default(),
-                selection: Default::default(),
-            })
-        }
-        */
 
         let mut book = button(text("Book").center().width(Length::Fill)).width(Length::Fill);
         if self.book {
