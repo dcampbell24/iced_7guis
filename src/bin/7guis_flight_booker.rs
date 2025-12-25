@@ -179,23 +179,17 @@ impl FlightBooker {
             book = book.on_press(Message::Book);
         }
 
-        let content = column![
-            pick_list,
-            one_way_flight,
-            return_flight,
-            book,
-            if self.book && self.show_dialogue {
-                &self.dialogue_string
-            } else {
-                ""
-            }
-        ]
-        .width(Length::Fill)
-        .align_x(Alignment::Center)
-        .padding(10)
-        .spacing(10);
+        let mut column = column![pick_list, one_way_flight, return_flight, book]
+            .width(Length::Fill)
+            .align_x(Alignment::Center)
+            .padding(10)
+            .spacing(10);
 
-        container(scrollable(content))
+        if self.book && self.show_dialogue {
+            column = column.push(text(self.dialogue_string.clone()));
+        }
+
+        container(scrollable(column))
             .width(Length::Fill)
             .height(Length::Fill)
             .into()
