@@ -185,6 +185,7 @@ impl FlightBooker {
         ]
         .width(Length::Fill)
         .align_x(Alignment::Center)
+        .padding(10)
         .spacing(10);
 
         container(scrollable(content))
