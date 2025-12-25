@@ -136,7 +136,7 @@ impl FlightBooker {
 
     fn view(&self) -> Element<'_, Message> {
         let pick_list = pick_list(
-            &Flight::ALL[..],
+            [Flight::OneWay, Flight::Return],
             Some(self.selected_flight),
             Message::FlightSelected,
         )
@@ -205,14 +205,10 @@ impl FlightBooker {
 }
 
 #[derive(Debug, Default, Clone, Copy, PartialEq, Eq)]
-pub enum Flight {
+enum Flight {
     #[default]
     OneWay,
     Return,
-}
-
-impl Flight {
-    const ALL: [Flight; 2] = [Flight::OneWay, Flight::Return];
 }
 
 impl std::fmt::Display for Flight {
