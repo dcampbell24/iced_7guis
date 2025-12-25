@@ -5,7 +5,8 @@ use iced::{window, Alignment, Element, Size};
 ///
 /// The application may error.
 pub fn main() -> iced::Result {
-    iced::application("Counter", Counter::update, Counter::view)
+    iced::application(Counter::default, Counter::update, Counter::view)
+        .title("Counter")
         .window(window::Settings {
             size: Size {
                 width: 200.0,

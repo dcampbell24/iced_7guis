@@ -7,7 +7,8 @@ use std::time::{Duration, Instant};
 ///
 /// The application may error.
 pub fn main() -> iced::Result {
-    iced::application("Timer", Timer::update, Timer::view)
+    iced::application(Timer::default, Timer::update, Timer::view)
+        .title("Timer")
         .window(window::Settings {
             size: Size {
                 width: 200.0,

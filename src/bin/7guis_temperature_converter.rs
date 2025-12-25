@@ -6,10 +6,11 @@ use iced::{window, Alignment, Element, Size};
 /// The application may error.
 pub fn main() -> iced::Result {
     iced::application(
-        "Temperature Converter",
+        TemperatureConverter::default,
         TemperatureConverter::update,
         TemperatureConverter::view,
     )
+    .title("Temperature Converter")
     .window(window::Settings {
         size: Size {
             width: 600.0,

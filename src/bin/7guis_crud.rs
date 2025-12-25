@@ -6,7 +6,8 @@ use iced::{window, Alignment, Element, Size};
 ///
 /// The application may error.
 pub fn main() -> iced::Result {
-    iced::application("CRUD", Crud::update, Crud::view)
+    iced::application(Crud::default, Crud::update, Crud::view)
+        .title("CRUD")
         .window(window::Settings {
             size: Size {
                 width: 580.0,

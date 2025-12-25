@@ -8,15 +8,20 @@ use std::fmt;
 ///
 /// The application may error.
 pub fn main() -> iced::Result {
-    iced::application("Flight Booker", FlightBooker::update, FlightBooker::view)
-        .window(window::Settings {
-            size: Size {
-                width: 300.0,
-                height: 250.0,
-            },
-            ..Default::default()
-        })
-        .run()
+    iced::application(
+        FlightBooker::default,
+        FlightBooker::update,
+        FlightBooker::view,
+    )
+    .title("Flight Booker")
+    .window(window::Settings {
+        size: Size {
+            width: 300.0,
+            height: 250.0,
+        },
+        ..Default::default()
+    })
+    .run()
 }
 
 type Date = (u32, u32, u32);
