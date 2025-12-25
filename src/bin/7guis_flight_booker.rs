@@ -118,7 +118,6 @@ impl FlightBooker {
             Message::FlightSelected(flight) => {
                 self.show_dialogue = false;
                 self.selected_flight = flight;
-                self.book = self.validate_flights().is_ok();
             }
             Message::OneWayFlightChanged(date) => {
                 self.show_dialogue = false;
@@ -128,6 +127,7 @@ impl FlightBooker {
             Message::ReturnFlightChanged(date) => {
                 self.show_dialogue = false;
                 self.return_flight = date;
+                self.book = self.validate_flights().is_ok();
             }
         }
 
