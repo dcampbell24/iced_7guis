@@ -174,12 +174,10 @@ impl FlightBooker {
         }
         */
 
-        let book = button("                            Book").width(Length::Fill);
-        let book = if self.book {
-            book.on_press(Message::Book)
-        } else {
-            book
-        };
+        let mut book = button("                            Book").width(Length::Fill);
+        if self.book {
+            book = book.on_press(Message::Book);
+        }
 
         let content = column![
             pick_list,
