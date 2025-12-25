@@ -229,14 +229,14 @@ impl std::fmt::Display for Flight {
 }
 
 fn validate_flight(string: &str) -> anyhow::Result<DateTime<Utc>> {
-    let mut year_month_day = string.split('.');
-    let Some(day) = year_month_day.next() else {
+    let mut day_month_year = string.split('.');
+    let Some(day) = day_month_year.next() else {
         return Err(anyhow::Error::msg("invalid day string"));
     };
-    let Some(month) = year_month_day.next() else {
+    let Some(month) = day_month_year.next() else {
         return Err(anyhow::Error::msg("invalid month string"));
     };
-    let Some(year) = year_month_day.next() else {
+    let Some(year) = day_month_year.next() else {
         return Err(anyhow::Error::msg("invalid year string"));
     };
 
