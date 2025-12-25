@@ -3,6 +3,9 @@ use iced::{window, Element, Size, Subscription};
 
 use std::time::{Duration, Instant};
 
+/// # Errors
+///
+/// The application may error.
 pub fn main() -> iced::Result {
     iced::application("Timer", Timer::update, Timer::view)
         .window(window::Settings {
@@ -88,7 +91,7 @@ impl Timer {
         }
     }
 
-    fn view(&self) -> Element<Message> {
+    fn view(&self) -> Element<'_, Message> {
         let elapsed_time = row![
             "Elapsed Time: ",
             progress_bar(0.0..=self.duration_max, self.elapsed_time),

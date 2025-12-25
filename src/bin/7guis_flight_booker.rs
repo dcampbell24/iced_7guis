@@ -4,6 +4,9 @@ use iced::{Alignment, Element, Length};
 
 use std::fmt;
 
+/// # Errors
+///
+/// The application may error.
 pub fn main() -> iced::Result {
     iced::application("Flight Booker", FlightBooker::update, FlightBooker::view)
         .window(window::Settings {
@@ -136,7 +139,7 @@ impl FlightBooker {
         }
     }
 
-    fn view(&self) -> Element<Message> {
+    fn view(&self) -> Element<'_, Message> {
         let pick_list = pick_list(
             &Flight::ALL[..],
             Some(self.selected_flight),

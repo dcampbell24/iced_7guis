@@ -1,6 +1,9 @@
 use iced::widget::{row, text, text_input};
 use iced::{window, Alignment, Element, Size};
 
+/// # Errors
+///
+/// The application may error.
 pub fn main() -> iced::Result {
     iced::application(
         "Temperature Converter",
@@ -62,13 +65,13 @@ impl TemperatureConverter {
                             self.celsius = celsius.to_string();
                         }
                         Err(_) => self.empty(),
-                    };
+                    }
                 }
             }
         }
     }
 
-    fn view(&self) -> Element<Message> {
+    fn view(&self) -> Element<'_, Message> {
         row![
             text_input("", &self.celsius).on_input(Message::CelsiusChanged),
             text(" Celsius = "),

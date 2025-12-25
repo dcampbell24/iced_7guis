@@ -2,6 +2,9 @@ use iced::widget::{button, column, radio, row, scrollable, text_input};
 use iced::widget::{container, Column};
 use iced::{window, Alignment, Element, Size};
 
+/// # Errors
+///
+/// The application may error.
 pub fn main() -> iced::Result {
     iced::application("CRUD", Crud::update, Crud::view)
         .window(window::Settings {
@@ -92,7 +95,7 @@ impl Crud {
         }
     }
 
-    fn view(&self) -> Element<Message> {
+    fn view(&self) -> Element<'_, Message> {
         let filter_prefix = row![
             "Filter prefix: ",
             text_input("", &self.filter_prefix).on_input(Message::FilterPrefixChanged),

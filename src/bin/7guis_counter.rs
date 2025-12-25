@@ -1,6 +1,9 @@
 use iced::widget::{button, row, text};
 use iced::{window, Alignment, Element, Size};
 
+/// # Errors
+///
+/// The application may error.
 pub fn main() -> iced::Result {
     iced::application("Counter", Counter::update, Counter::view)
         .window(window::Settings {
@@ -32,7 +35,7 @@ impl Counter {
         }
     }
 
-    fn view(&self) -> Element<Message> {
+    fn view(&self) -> Element<'_, Message> {
         row![
             text(self.value).size(50),
             button("Count").on_press(Message::IncrementPressed),
