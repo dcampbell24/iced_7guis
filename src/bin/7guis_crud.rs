@@ -101,7 +101,9 @@ impl Crud {
     fn view(&self) -> Element<'_, Message> {
         let filter_prefix = row![
             "Filter prefix:",
-            text_input("", &self.filter_prefix).on_input(Message::FilterPrefixChanged),
+            text_input("", &self.filter_prefix)
+                .on_input(Message::FilterPrefixChanged)
+                .width(190),
         ]
         .spacing(SPACING)
         .padding(10)
