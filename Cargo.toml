@@ -7,7 +7,7 @@ rust-version =  "1.85"
 license = "MIT OR Apache-2.0"
 categories = ["gui"]
 keywords = ["7guis"]
-# documentation = "https://docs.rs/iced_7guis"
+documentation = "https://docs.rs/iced_7guis"
 homepage = "https://eugenkiss.github.io/7guis/"
 repository = "https://github.com/dcampbell24/iced_7guis"
 readme = "README.md"
@@ -15,7 +15,7 @@ readme = "README.md"
 [dependencies]
 anyhow = "1"
 chrono = "0.4"
-iced = { version = "0.14", features = ["canvas", "tokio", "debug"] }
+iced = { version = "0.14", features = ["tokio", "debug"] }
 
 [lints.clippy]
 cargo = "warn"
