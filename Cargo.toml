@@ -11,6 +11,7 @@ documentation = "https://docs.rs/iced_7guis"
 homepage = "https://eugenkiss.github.io/7guis/"
 repository = "https://github.com/dcampbell24/iced_7guis"
 readme = "README.md"
+include = ["src/**/*", "LICENSE-*", "README.md"]
 
 [dependencies]
 anyhow = "1"
