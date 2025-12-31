@@ -1,6 +1,6 @@
+use iced::widget::{Column, container};
 use iced::widget::{button, column, radio, row, scrollable, text_input};
-use iced::widget::{container, Column};
-use iced::{window, Alignment, Element, Size};
+use iced::{Alignment, Element, Size, window};
 
 const SPACING: u32 = 10;
 

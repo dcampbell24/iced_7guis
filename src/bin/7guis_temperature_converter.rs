@@ -1,5 +1,5 @@
 use iced::widget::{row, text, text_input};
-use iced::{window, Alignment, Element, Size};
+use iced::{Alignment, Element, Size, window};
 
 /// # Errors
 ///

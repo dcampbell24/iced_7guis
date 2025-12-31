@@ -1,5 +1,5 @@
 use iced::widget::{button, column, progress_bar, row, slider, text};
-use iced::{window, Element, Size, Subscription};
+use iced::{Element, Size, Subscription, window};
 
 use std::time::{Duration, Instant};
 

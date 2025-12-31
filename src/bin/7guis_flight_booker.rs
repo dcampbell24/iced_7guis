@@ -1,8 +1,8 @@
 use chrono::offset::LocalResult;
 use chrono::{DateTime, TimeZone, Utc};
 use iced::widget::{button, column, container, pick_list, scrollable, text, text_input};
-use iced::{window, Size};
 use iced::{Alignment, Element, Length};
+use iced::{Size, window};
 
 /// # Errors
 ///

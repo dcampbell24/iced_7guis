@@ -1,5 +1,5 @@
 use iced::widget::{button, row, text};
-use iced::{window, Alignment, Element, Size};
+use iced::{Alignment, Element, Size, window};
 
 /// # Errors
 ///
