@@ -3,7 +3,7 @@ name = "iced_7guis"
 description = "An implementation of 7 GUIs using iced."
 version = "0.1.0"
 edition = "2024"
-rust-version =  "1.85"
+rust-version =  "1.88"
 license = "MIT OR Apache-2.0"
 categories = ["gui"]
 keywords = ["7guis"]
@@ -19,5 +19,10 @@ chrono = "0.4"
 iced = { version = "0.14", features = ["tokio", "debug"] }
 
 [lints.clippy]
-cargo = "warn"
-pedantic = "warn"
+cargo = "deny"
+complexity = "deny"
+correctness = "deny"
+pedantic = "deny"
+perf = "deny"
+style = "deny"
+suspicious = "deny"
