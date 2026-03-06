@@ -16,7 +16,8 @@ include = ["src/**/*", "LICENSE-*", "README.md"]
 [dependencies]
 anyhow = "1"
 chrono = "0.4"
-iced = { version = "0.14", features = ["tokio", "debug"] }
+iced = { version = "0.14", features = ["canvas", "tokio"] }
+sweeten = "0.14"
 
 [lints.clippy]
 cargo = "deny"
