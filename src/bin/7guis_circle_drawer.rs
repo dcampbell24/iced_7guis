@@ -28,22 +28,19 @@ struct App {
 
 impl App {
     fn update(&mut self, message: Message) {
-        match message {
-            Message::Mouse(event, point) => {
-                if event == "Left press" {
-                    self.circles.push(Circle {
-                        center: point,
-                        closest: false,
-                        radius: 50.0,
-                    });
-                }
-
+        match message.mouse_event {
+            "left press" => self.circles.push(Circle {
+                center: message.mouse_point,
+                closest: false,
+                radius: 50.0,
+            }),
+            "moved" => {
                 let mut distance_1 = 1_000.0;
                 let mut index = 0;
 
                 for (i, circle) in self.circles.iter_mut().enumerate() {
-                    let distance_2 = ((point.x - circle.center.x).powi(2)
-                        + (point.y - circle.center.y).powi(2))
+                    let distance_2 = ((message.mouse_point.x - circle.center.x).powi(2)
+                        + (message.mouse_point.y - circle.center.y).powi(2))
                     .sqrt();
 
                     if distance_2 < distance_1 {
@@ -60,6 +57,12 @@ impl App {
                     circle.closest = true;
                 }
             }
+            "right press" => self.circles.push(Circle {
+                center: message.mouse_point,
+                closest: false,
+                radius: 40.0,
+            }),
+            _ => unreachable!(),
         }
     }
 
@@ -69,8 +72,18 @@ impl App {
         stack = stack.push(
             center(
                 mouse_area(center("").style(container::rounded_box))
-                    .on_move(|p| Message::Mouse("Moved", p))
-                    .on_press(|p| Message::Mouse("Left press", p)),
+                    .on_move(|mouse_point| Message {
+                        mouse_event: "moved",
+                        mouse_point,
+                    })
+                    .on_press(|mouse_point| Message {
+                        mouse_event: "left press",
+                        mouse_point,
+                    })
+                    .on_right_press(|mouse_point| Message {
+                        mouse_event: "right press",
+                        mouse_point,
+                    }),
             )
             .width(800.0)
             .height(800.0)
@@ -90,8 +103,9 @@ impl App {
 }
 
 #[derive(Clone, Copy, Debug)]
-enum Message {
-    Mouse(&'static str, Point),
+struct Message {
+    mouse_event: &'static str,
+    mouse_point: Point,
 }
 
 impl<Message> Program<Message> for App {
