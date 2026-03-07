@@ -23,7 +23,7 @@ pub fn main() -> iced::Result {
 
 #[derive(Clone, Debug, Default)]
 struct App {
-    circles: Vec<Point>,
+    circles: Vec<Circle>,
 }
 
 impl App {
@@ -31,7 +31,30 @@ impl App {
         match message {
             Message::Mouse(event, point) => {
                 if event == "Left press" {
-                    self.circles.push(point);
+                    self.circles.push(Circle {
+                        center: point,
+                        closest: false,
+                    });
+                }
+
+                let mut distance_1 = 1_000.0;
+                let mut index = 0;
+
+                for (i, circle) in self.circles.iter_mut().enumerate() {
+                    let distance_2 = ((point.x - circle.center.x).powi(2)
+                        + (point.y - circle.center.y).powi(2))
+                    .sqrt();
+
+                    if distance_2 < distance_1 {
+                        distance_1 = distance_2;
+                        index = i;
+                    }
+
+                    circle.closest = false;
+                }
+
+                if let Some(circle) = self.circles.get_mut(index) {
+                    circle.closest = true;
                 }
             }
         }
@@ -81,16 +104,28 @@ impl<Message> Program<Message> for App {
         _: iced::mouse::Cursor,
     ) -> Vec<Geometry> {
         let mut frame = Frame::new(renderer, bounds.size());
+
         for circle in &self.circles {
             let point = Point {
-                x: circle.x,
-                y: circle.y,
+                x: circle.center.x,
+                y: circle.center.y,
             };
 
             let path = Path::circle(point, 50.0);
-            frame.fill(&path, Color::WHITE);
+
+            if circle.closest {
+                frame.fill(&path, Color::BLACK);
+            } else {
+                frame.fill(&path, Color::WHITE);
+            }
         }
 
         vec![frame.into_geometry()]
     }
+}
+
+#[derive(Clone, Debug, Default)]
+struct Circle {
+    center: Point,
+    closest: bool,
 }
