@@ -23,15 +23,15 @@ pub fn main() -> iced::Result {
 
 #[derive(Clone, Debug, Default)]
 struct App {
-    position: Option<Point>,
+    circles: Vec<Point>,
 }
 
 impl App {
     fn update(&mut self, message: Message) {
         match message {
-            Message::Mouse(event, p) => {
+            Message::Mouse(event, point) => {
                 if event == "Left press" {
-                    self.position = Some(p);
+                    self.circles.push(point);
                 }
             }
         }
@@ -54,7 +54,7 @@ impl App {
 
         stack = stack.push(
             Canvas::new(App {
-                position: self.position,
+                circles: self.circles.clone(),
             })
             .width(800.0)
             .height(800.0),
@@ -81,14 +81,14 @@ impl<Message> Program<Message> for App {
         _: iced::mouse::Cursor,
     ) -> Vec<Geometry> {
         let mut frame = Frame::new(renderer, bounds.size());
-        if let Some(position) = self.position {
+        for circle in &self.circles {
             let point = Point {
-                x: position.x,
-                y: position.y,
+                x: circle.x,
+                y: circle.y,
             };
 
             let path = Path::circle(point, 50.0);
-            frame.fill(&path, Color::BLACK);
+            frame.fill(&path, Color::WHITE);
         }
 
         vec![frame.into_geometry()]
