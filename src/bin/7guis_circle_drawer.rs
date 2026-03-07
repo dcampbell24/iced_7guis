@@ -28,11 +28,15 @@ struct App {
 
 impl App {
     fn update(&mut self, message: Message) {
+        for circle in &mut self.circles {
+            circle.selected = false;
+        }
+
         match message.mouse_event {
             "left press" => self.circles.push(Circle {
                 center: message.mouse_point,
-                closest: false,
                 radius: 50.0,
+                selected: true,
             }),
             "moved" => {
                 let mut distance_1 = 1_000.0;
@@ -47,20 +51,18 @@ impl App {
                         distance_1 = distance_2;
                         index = i;
                     }
-
-                    circle.closest = false;
                 }
 
                 if let Some(circle) = self.circles.get_mut(index)
                     && distance_1 < circle.radius
                 {
-                    circle.closest = true;
+                    circle.selected = true;
                 }
             }
             "right press" => self.circles.push(Circle {
                 center: message.mouse_point,
-                closest: false,
                 radius: 40.0,
+                selected: true,
             }),
             _ => unreachable!(),
         }
@@ -129,7 +131,7 @@ impl<Message> Program<Message> for App {
 
             let path = Path::circle(point, circle.radius);
 
-            if circle.closest {
+            if circle.selected {
                 frame.fill(&path, Color::BLACK);
             } else {
                 frame.fill(&path, Color::WHITE);
@@ -143,6 +145,6 @@ impl<Message> Program<Message> for App {
 #[derive(Clone, Debug, Default)]
 struct Circle {
     center: Point,
-    closest: bool,
     radius: f32,
+    selected: bool,
 }
