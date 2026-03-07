@@ -34,6 +34,7 @@ impl App {
                     self.circles.push(Circle {
                         center: point,
                         closest: false,
+                        radius: 50.0,
                     });
                 }
 
@@ -53,7 +54,9 @@ impl App {
                     circle.closest = false;
                 }
 
-                if let Some(circle) = self.circles.get_mut(index) {
+                if let Some(circle) = self.circles.get_mut(index)
+                    && distance_1 < circle.radius
+                {
                     circle.closest = true;
                 }
             }
@@ -110,7 +113,7 @@ impl<Message> Program<Message> for App {
                 y: circle.center.y,
             };
 
-            let path = Path::circle(point, 50.0);
+            let path = Path::circle(point, circle.radius);
 
             if circle.closest {
                 frame.fill(&path, Color::BLACK);
@@ -127,4 +130,5 @@ impl<Message> Program<Message> for App {
 struct Circle {
     center: Point,
     closest: bool,
+    radius: f32,
 }
