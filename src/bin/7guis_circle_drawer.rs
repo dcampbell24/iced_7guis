@@ -66,8 +66,7 @@ impl App {
         stack = stack.push(
             center(
                 mouse_area(center("").style(container::rounded_box))
-                    .on_enter(|p| Message::Mouse("Entered", p))
-                    .on_exit(|p| Message::Mouse("Exited", p))
+                    .on_move(|p| Message::Mouse("Moved", p))
                     .on_press(|p| Message::Mouse("Left press", p)),
             )
             .width(800.0)
