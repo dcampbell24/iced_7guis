@@ -116,9 +116,9 @@ impl App {
         if let Some(circle) = &self.display_size {
             stack = stack.push(
                 card(
-                    text!("Circle Size {}", circle.radius.round_ties_even()),
+                    text!("Circle Radius {}", circle.radius.round_ties_even()),
                     text!(
-                        "Adjust diameter of circle at ({}, {}).",
+                        "Adjust radius of circle at ({}, {}).",
                         circle.center.x.round_ties_even(),
                         circle.center.y.round_ties_even()
                     ),
