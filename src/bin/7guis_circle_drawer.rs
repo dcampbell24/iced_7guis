@@ -96,10 +96,11 @@ impl App {
 
     fn view(&self) -> Element<'_, Message> {
         let mut stack = Stack::new();
-        let mut column = Column::new();
 
-        column = column.push(row![button("Undo"), button("Redo")].padding(10).spacing(10));
-        column = column.push(
+        let mut column_1 = Column::new();
+        column_1 = column_1.push(row![button("Undo"), button("Redo")].padding(10).spacing(10));
+
+        stack = stack.push(
             center(
                 mouse_area(center("").style(container::rounded_box))
                     .on_move(|point| {
@@ -122,11 +123,9 @@ impl App {
                     }),
             )
             .width(800.0)
-            .height(800.0)
-            .padding(10),
+            .height(800.0),
         );
 
-        stack = stack.push(column);
         stack = stack.push(
             Canvas::new(App {
                 circles: self.circles.clone(),
@@ -139,25 +138,25 @@ impl App {
         if let Some(circle) = &self.display_size
             && let Ok(circle) = circle.lock()
         {
-            let mut column = Column::new();
-            column = column.push(text!(
+            let mut column_2 = Column::new();
+            column_2 = column_2.push(text!(
                 "Adjust radius of circle at ({}, {}).",
                 circle.center.x.round_ties_even(),
                 circle.center.y.round_ties_even()
             ));
-            column = column.push(slider(10.0..=100.0, circle.radius, Message::SizeChange));
+            column_2 = column_2.push(slider(10.0..=100.0, circle.radius, Message::SizeChange));
 
             stack = stack.push(
                 card(
                     text!("Circle Radius {}", circle.radius.round_ties_even()),
-                    column,
+                    column_2,
                 )
                 .style(style::card::primary)
                 .on_close(Message::CloseSize),
             );
         }
 
-        stack.into()
+        column_1.push(stack).into()
     }
 }
 
