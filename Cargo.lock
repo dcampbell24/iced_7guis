@@ -1226,12 +1226,9 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "3e676b8d322a419c7eef29cac1aa78e8afda6a9d2d4597483d42de3e90378fe2"
 dependencies = [
  "cfg-if",
- "chrono",
  "iced_core",
  "iced_fonts",
  "iced_widget",
- "num-format",
- "num-traits",
  "web-time",
 ]
 
@@ -1795,16 +1792,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "ee6cda3051665f1fb8d9e08fc35c96d5a244fb1be711a03b71118828afc9a873"
 dependencies = [
  "jni-sys",
-]
-
-[[package]]
-name = "num-format"
-version = "0.4.4"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a652d9771a63711fd3c3deb670acfbe5c30a4072e664d7a3bf5a9e1056ac72c3"
-dependencies = [
- "arrayvec",
- "itoa",
 ]
 
 [[package]]
