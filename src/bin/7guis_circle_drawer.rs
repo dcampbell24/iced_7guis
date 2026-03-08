@@ -1,9 +1,11 @@
+use std::sync::{Arc, Mutex};
+
 use iced::{
     Color, Element, Point, Rectangle, Size, Theme,
     widget::{
-        Stack,
+        Column, Stack,
         canvas::{Canvas, Frame, Geometry, Path, Program},
-        center, container, text,
+        center, container, slider, text,
     },
 };
 use iced_aw::{ICED_AW_FONT_BYTES, helpers::card, style};
@@ -25,24 +27,28 @@ pub fn main() -> iced::Result {
 
 #[derive(Clone, Debug, Default)]
 struct App {
-    circles: Vec<Circle>,
-    display_size: Option<Circle>,
+    circles: Vec<Arc<Mutex<Circle>>>,
+    display_size: Option<Arc<Mutex<Circle>>>,
 }
 
 impl App {
     fn update(&mut self, message: Message) {
         match message {
             Message::Mouse(mouse) => match mouse.event {
-                "left press" => self.circles.push(Circle {
+                "left press" => self.circles.push(Arc::new(Mutex::new(Circle {
                     center: mouse.point,
                     radius: 50.0,
                     selected: true,
-                }),
+                }))),
                 "moved" => {
                     let mut distance_1 = 1_000.0;
                     let mut index = 0;
 
                     for (i, circle) in self.circles.iter_mut().enumerate() {
+                        let Ok(mut circle) = circle.lock() else {
+                            return;
+                        };
+
                         let distance_2 = ((mouse.point.x - circle.center.x).powi(2)
                             + (mouse.point.y - circle.center.y).powi(2))
                         .sqrt();
@@ -56,21 +62,35 @@ impl App {
                     }
 
                     if let Some(circle) = self.circles.get_mut(index)
+                        && let Ok(mut circle) = circle.lock()
                         && distance_1 < circle.radius
                     {
                         circle.selected = true;
                     }
                 }
                 "right press" => {
-                    for circle in &self.circles {
+                    for circle_arc in &self.circles {
+                        let Ok(circle) = circle_arc.lock() else {
+                            return;
+                        };
+
                         if circle.selected {
-                            self.display_size = Some(circle.clone());
+                            self.display_size = Some(circle_arc.clone());
                         }
                     }
                 }
                 _ => unreachable!(),
             },
             Message::CloseSize => self.display_size = None,
+            Message::SizeChange(radius) => {
+                if let Some(circle) = &mut self.display_size {
+                    let Ok(mut circle) = circle.lock() else {
+                        unreachable!();
+                    };
+
+                    circle.radius = radius;
+                }
+            }
         }
     }
 
@@ -113,15 +133,21 @@ impl App {
             .height(800.0),
         );
 
-        if let Some(circle) = &self.display_size {
+        if let Some(circle) = &self.display_size
+            && let Ok(circle) = circle.lock()
+        {
+            let mut column = Column::new();
+            column = column.push(text!(
+                "Adjust radius of circle at ({}, {}).",
+                circle.center.x.round_ties_even(),
+                circle.center.y.round_ties_even()
+            ));
+            column = column.push(slider(10.0..=100.0, circle.radius, Message::SizeChange));
+
             stack = stack.push(
                 card(
                     text!("Circle Radius {}", circle.radius.round_ties_even()),
-                    text!(
-                        "Adjust radius of circle at ({}, {}).",
-                        circle.center.x.round_ties_even(),
-                        circle.center.y.round_ties_even()
-                    ),
+                    column,
                 )
                 .style(style::card::primary)
                 .on_close(Message::CloseSize),
@@ -136,6 +162,7 @@ impl App {
 enum Message {
     CloseSize,
     Mouse(Mouse),
+    SizeChange(f32),
 }
 
 #[derive(Clone, Copy, Debug)]
@@ -158,6 +185,10 @@ impl<Message> Program<Message> for App {
         let mut frame = Frame::new(renderer, bounds.size());
 
         for circle in &self.circles {
+            let Ok(circle) = circle.lock() else {
+                continue;
+            };
+
             let point = Point {
                 x: circle.center.x,
                 y: circle.center.y,
