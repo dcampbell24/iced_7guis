@@ -28,6 +28,7 @@ pub fn main() -> iced::Result {
 #[derive(Clone, Debug, Default)]
 struct App {
     circles: Vec<Arc<Mutex<Circle>>>,
+    circles_undo: Vec<Arc<Mutex<Circle>>>,
     display_size: Option<Arc<Mutex<Circle>>>,
 }
 
@@ -35,11 +36,15 @@ impl App {
     fn update(&mut self, message: Message) {
         match message {
             Message::Mouse(mouse) => match mouse.event {
-                "left press" => self.circles.push(Arc::new(Mutex::new(Circle {
-                    center: mouse.point,
-                    radius: 50.0,
-                    selected: true,
-                }))),
+                "left press" => {
+                    self.circles.push(Arc::new(Mutex::new(Circle {
+                        center: mouse.point,
+                        radius: 50.0,
+                        selected: true,
+                    })));
+
+                    self.circles_undo.clear();
+                }
                 "moved" => {
                     let mut distance_1 = 1_000.0;
                     let mut index = 0;
@@ -82,6 +87,11 @@ impl App {
                 _ => unreachable!(),
             },
             Message::CloseSize => self.display_size = None,
+            Message::Redo => {
+                if let Some(circle) = self.circles_undo.pop() {
+                    self.circles.push(circle);
+                }
+            }
             Message::SizeChange(radius) => {
                 if let Some(circle) = &mut self.display_size {
                     let Ok(mut circle) = circle.lock() else {
@@ -91,6 +101,11 @@ impl App {
                     circle.radius = radius;
                 }
             }
+            Message::Undo => {
+                if let Some(circle) = self.circles.pop() {
+                    self.circles_undo.push(circle);
+                }
+            }
         }
     }
 
@@ -98,7 +113,18 @@ impl App {
         let mut stack = Stack::new();
 
         let mut column_1 = Column::new();
-        column_1 = column_1.push(row![button("Undo"), button("Redo")].padding(10).spacing(10));
+
+        let mut undo = button("Undo");
+        if !self.circles.is_empty() {
+            undo = undo.on_press(Message::Undo);
+        }
+
+        let mut redo = button("Redo");
+        if !self.circles_undo.is_empty() {
+            redo = redo.on_press(Message::Redo);
+        }
+
+        column_1 = column_1.push(row![undo, redo].padding(10).spacing(10));
 
         stack = stack.push(
             center(
@@ -129,6 +155,7 @@ impl App {
         stack = stack.push(
             Canvas::new(App {
                 circles: self.circles.clone(),
+                circles_undo: Vec::new(),
                 display_size: None,
             })
             .width(800.0)
@@ -164,7 +191,9 @@ impl App {
 enum Message {
     CloseSize,
     Mouse(Mouse),
+    Redo,
     SizeChange(f32),
+    Undo,
 }
 
 #[derive(Clone, Copy, Debug)]
