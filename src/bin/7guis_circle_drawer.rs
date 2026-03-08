@@ -3,9 +3,10 @@ use iced::{
     widget::{
         Stack,
         canvas::{Canvas, Frame, Geometry, Path, Program},
-        center, container,
+        center, container, text,
     },
 };
+use iced_aw::{ICED_AW_FONT_BYTES, helpers::card, style};
 use sweeten::mouse_area;
 
 /// # Errors
@@ -14,6 +15,7 @@ use sweeten::mouse_area;
 pub fn main() -> iced::Result {
     iced::application(App::default, App::update, App::view)
         .title("Circle Drawer")
+        .font(ICED_AW_FONT_BYTES)
         .window_size(Size {
             width: 800.0,
             height: 800.0,
@@ -24,47 +26,51 @@ pub fn main() -> iced::Result {
 #[derive(Clone, Debug, Default)]
 struct App {
     circles: Vec<Circle>,
+    display_size: Option<Circle>,
 }
 
 impl App {
     fn update(&mut self, message: Message) {
-        for circle in &mut self.circles {
-            circle.selected = false;
-        }
+        match message {
+            Message::Mouse(mouse) => match mouse.event {
+                "left press" => self.circles.push(Circle {
+                    center: mouse.point,
+                    radius: 50.0,
+                    selected: true,
+                }),
+                "moved" => {
+                    let mut distance_1 = 1_000.0;
+                    let mut index = 0;
 
-        match message.mouse_event {
-            "left press" => self.circles.push(Circle {
-                center: message.mouse_point,
-                radius: 50.0,
-                selected: true,
-            }),
-            "moved" => {
-                let mut distance_1 = 1_000.0;
-                let mut index = 0;
+                    for (i, circle) in self.circles.iter_mut().enumerate() {
+                        let distance_2 = ((mouse.point.x - circle.center.x).powi(2)
+                            + (mouse.point.y - circle.center.y).powi(2))
+                        .sqrt();
 
-                for (i, circle) in self.circles.iter_mut().enumerate() {
-                    let distance_2 = ((message.mouse_point.x - circle.center.x).powi(2)
-                        + (message.mouse_point.y - circle.center.y).powi(2))
-                    .sqrt();
+                        if distance_2 < distance_1 {
+                            distance_1 = distance_2;
+                            index = i;
+                        }
 
-                    if distance_2 < distance_1 {
-                        distance_1 = distance_2;
-                        index = i;
+                        circle.selected = false;
+                    }
+
+                    if let Some(circle) = self.circles.get_mut(index)
+                        && distance_1 < circle.radius
+                    {
+                        circle.selected = true;
                     }
                 }
-
-                if let Some(circle) = self.circles.get_mut(index)
-                    && distance_1 < circle.radius
-                {
-                    circle.selected = true;
+                "right press" => {
+                    for circle in &self.circles {
+                        if circle.selected {
+                            self.display_size = Some(circle.clone());
+                        }
+                    }
                 }
-            }
-            "right press" => self.circles.push(Circle {
-                center: message.mouse_point,
-                radius: 40.0,
-                selected: true,
-            }),
-            _ => unreachable!(),
+                _ => unreachable!(),
+            },
+            Message::CloseSize => self.display_size = None,
         }
     }
 
@@ -74,17 +80,23 @@ impl App {
         stack = stack.push(
             center(
                 mouse_area(center("").style(container::rounded_box))
-                    .on_move(|mouse_point| Message {
-                        mouse_event: "moved",
-                        mouse_point,
+                    .on_move(|point| {
+                        Message::Mouse(Mouse {
+                            event: "moved",
+                            point,
+                        })
                     })
-                    .on_press(|mouse_point| Message {
-                        mouse_event: "left press",
-                        mouse_point,
+                    .on_press(|point| {
+                        Message::Mouse(Mouse {
+                            event: "left press",
+                            point,
+                        })
                     })
-                    .on_right_press(|mouse_point| Message {
-                        mouse_event: "right press",
-                        mouse_point,
+                    .on_right_press(|point| {
+                        Message::Mouse(Mouse {
+                            event: "right press",
+                            point,
+                        })
                     }),
             )
             .width(800.0)
@@ -95,19 +107,41 @@ impl App {
         stack = stack.push(
             Canvas::new(App {
                 circles: self.circles.clone(),
+                display_size: None,
             })
             .width(800.0)
             .height(800.0),
         );
+
+        if let Some(circle) = &self.display_size {
+            stack = stack.push(
+                card(
+                    text("Circle Size"),
+                    text!(
+                        "Adjust diameter of circle at ({}, {}).",
+                        circle.center.x.round_ties_even(),
+                        circle.center.y.round_ties_even()
+                    ),
+                )
+                .style(style::card::primary)
+                .on_close(Message::CloseSize),
+            );
+        }
 
         stack.into()
     }
 }
 
 #[derive(Clone, Copy, Debug)]
-struct Message {
-    mouse_event: &'static str,
-    mouse_point: Point,
+enum Message {
+    CloseSize,
+    Mouse(Mouse),
+}
+
+#[derive(Clone, Copy, Debug)]
+struct Mouse {
+    event: &'static str,
+    point: Point,
 }
 
 impl<Message> Program<Message> for App {
