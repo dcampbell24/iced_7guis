@@ -3,9 +3,9 @@ use std::sync::{Arc, Mutex};
 use iced::{
     Color, Element, Point, Rectangle, Size, Theme,
     widget::{
-        Column, Stack,
+        Column, Stack, button,
         canvas::{Canvas, Frame, Geometry, Path, Program},
-        center, container, slider, text,
+        center, container, row, slider, text,
     },
 };
 use iced_aw::{ICED_AW_FONT_BYTES, helpers::card, style};
@@ -96,8 +96,10 @@ impl App {
 
     fn view(&self) -> Element<'_, Message> {
         let mut stack = Stack::new();
+        let mut column = Column::new();
 
-        stack = stack.push(
+        column = column.push(row![button("Undo"), button("Redo")].padding(10).spacing(10));
+        column = column.push(
             center(
                 mouse_area(center("").style(container::rounded_box))
                     .on_move(|point| {
@@ -124,6 +126,7 @@ impl App {
             .padding(10),
         );
 
+        stack = stack.push(column);
         stack = stack.push(
             Canvas::new(App {
                 circles: self.circles.clone(),
