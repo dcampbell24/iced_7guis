@@ -1,4 +1,8 @@
-use iced::{Alignment, Element, Font, Size, window, widget::{button, column, row, text_input}};
+use iced::{
+    Alignment, Element, Font, Size,
+    widget::{button, column, row, text_input},
+    window,
+};
 use iced_aw::{SelectionList, style};
 
 const SPACING: u32 = 10;
@@ -108,34 +112,20 @@ impl Crud {
         .padding(10)
         .align_y(Alignment::Start);
 
-        // let mut names_col = Vec::new();
-
-        /*
-        for (i, names) in self.display_names.iter().enumerate() {
-            names_col.push(radio(names, i, self.selected_name, Message::SelectedName).into());
-        }
-        */
-
-        let selection_list = row![SelectionList::new_with(
-            &self.names[..],
-            Message::SelectedName,
-            12.0,
-            5.0,
-            style::selection_list::primary,
-            self.selected_name,
-            Font::default(),
-        )
-        .width(iced::Length::Fixed(300.0))
-        .height(iced::Length::Fixed(200.0))].padding(10);
-        
-        
-        /*
-        let names_col = Column::with_children(names_col).padding(10).spacing(10);
-        let names_col = scrollable(names_col).height(iced::Length::Fixed(200.0));
-        let names_col = container(names_col)
+        let selection_list = row![
+            SelectionList::new_with(
+                &self.names[..],
+                Message::SelectedName,
+                12.0,
+                5.0,
+                style::selection_list::primary,
+                self.selected_name,
+                Font::default(),
+            )
             .width(iced::Length::Fixed(300.0))
-            .style(container::bordered_box);
-        */
+            .height(iced::Length::Fixed(200.0))
+        ]
+        .padding(10);
 
         let name = row![
             "Name:",
