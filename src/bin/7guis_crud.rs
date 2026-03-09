@@ -1,6 +1,5 @@
-use iced::widget::{Column, container};
-use iced::widget::{button, column, radio, row, scrollable, text_input};
-use iced::{Alignment, Element, Size, window};
+use iced::{Alignment, Element, Font, Size, window, widget::{button, column, row, text_input}};
+use iced_aw::{SelectionList, style};
 
 const SPACING: u32 = 10;
 
@@ -13,7 +12,7 @@ pub fn main() -> iced::Result {
         .window(window::Settings {
             size: Size {
                 width: 580.0,
-                height: 300.0,
+                height: 320.0,
             },
             ..Default::default()
         })
@@ -33,7 +32,7 @@ struct Crud {
 #[derive(Clone, Debug)]
 enum Message {
     FilterPrefixChanged(String),
-    SelectedName(usize),
+    SelectedName(usize, String),
     NameChanged(String),
     SurnameChanged(String),
     CreatePressed,
@@ -48,7 +47,7 @@ impl Crud {
                 self.filter_prefix = prefix;
                 self.selected_name = None;
             }
-            Message::SelectedName(index) => {
+            Message::SelectedName(index, _string) => {
                 self.selected_name = Some(index);
             }
             Message::NameChanged(name) => {
@@ -109,17 +108,34 @@ impl Crud {
         .padding(10)
         .align_y(Alignment::Start);
 
-        let mut names_col = Vec::new();
+        // let mut names_col = Vec::new();
 
+        /*
         for (i, names) in self.display_names.iter().enumerate() {
             names_col.push(radio(names, i, self.selected_name, Message::SelectedName).into());
         }
+        */
 
+        let selection_list = row![SelectionList::new_with(
+            &self.names[..],
+            Message::SelectedName,
+            12.0,
+            5.0,
+            style::selection_list::primary,
+            self.selected_name,
+            Font::default(),
+        )
+        .width(iced::Length::Fixed(300.0))
+        .height(iced::Length::Fixed(200.0))].padding(10);
+        
+        
+        /*
         let names_col = Column::with_children(names_col).padding(10).spacing(10);
         let names_col = scrollable(names_col).height(iced::Length::Fixed(200.0));
         let names_col = container(names_col)
             .width(iced::Length::Fixed(300.0))
             .style(container::bordered_box);
+        */
 
         let name = row![
             "Name:",
@@ -135,7 +151,7 @@ impl Crud {
 
         let enter_name = column![name, surname].padding(10).spacing(10);
 
-        let names_box = row![names_col, enter_name];
+        let names_box = row![selection_list, enter_name];
 
         let create = button("Create");
         let create = if self.sur_name.is_empty() || self.name.is_empty() {

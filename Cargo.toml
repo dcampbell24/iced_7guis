@@ -17,7 +17,7 @@ include = ["src/**/*", "LICENSE-*", "README.md"]
 anyhow = "1"
 chrono = "0.4"
 iced = { version = "0.14", features = ["canvas", "tokio"] }
-iced_aw = { version = "0.13", default-features = false, features = ["card"] }
+iced_aw = { version = "0.13", default-features = false, features = ["card", "selection_list"] }
 sweeten = "0.14"
 
 [lints.clippy]
