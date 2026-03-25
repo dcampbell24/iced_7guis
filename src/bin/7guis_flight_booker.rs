@@ -1,8 +1,9 @@
-use chrono::offset::LocalResult;
-use chrono::{DateTime, TimeZone, Utc};
-use iced::widget::{button, column, container, pick_list, scrollable, text, text_input};
-use iced::{Alignment, Element, Length};
-use iced::{Size, window};
+use iced::{
+    Alignment, Element, Length, Size,
+    widget::{button, column, container, pick_list, scrollable, text, text_input},
+    window,
+};
+use jiff::civil::{Date, DateTime, Time};
 
 /// # Errors
 ///
@@ -28,9 +29,9 @@ pub fn main() -> iced::Result {
 struct FlightBooker {
     selected_flight: Flight,
     one_way_flight: String,
-    one_way_flight_date: Option<DateTime<Utc>>,
+    one_way_flight_date: Option<DateTime>,
     return_flight: String,
-    return_flight_date: Option<DateTime<Utc>>,
+    return_flight_date: Option<DateTime>,
     book: bool,
     show_dialogue: bool,
     dialogue_string: String,
@@ -119,12 +120,26 @@ impl FlightBooker {
             Message::OneWayFlightChanged(date) => {
                 self.show_dialogue = false;
                 self.one_way_flight = date;
-                self.book = self.validate_flights().is_ok();
+
+                match self.validate_flights() {
+                    Ok(()) => self.book = true,
+                    Err(error) => {
+                        eprintln!("error: {error}");
+                        self.book = false;
+                    }
+                }
             }
             Message::ReturnFlightChanged(date) => {
                 self.show_dialogue = false;
                 self.return_flight = date;
-                self.book = self.validate_flights().is_ok();
+
+                match self.validate_flights() {
+                    Ok(()) => self.book = true,
+                    Err(error) => {
+                        eprintln!("error: {error}");
+                        self.book = false;
+                    }
+                }
             }
         }
 
@@ -191,7 +206,7 @@ impl std::fmt::Display for Flight {
     }
 }
 
-fn validate_flight(string: &str) -> anyhow::Result<DateTime<Utc>> {
+fn validate_flight(string: &str) -> anyhow::Result<DateTime> {
     let mut day_month_year = string.split('.');
     let Some(day) = day_month_year.next() else {
         return Err(anyhow::Error::msg("invalid day string"));
@@ -203,11 +218,8 @@ fn validate_flight(string: &str) -> anyhow::Result<DateTime<Utc>> {
         return Err(anyhow::Error::msg("invalid year string"));
     };
 
-    if let LocalResult::Single(flight_date) =
-        Utc.with_ymd_and_hms(year.parse()?, month.parse()?, day.parse()?, 0, 0, 0)
-    {
-        Ok(flight_date)
-    } else {
-        Err(anyhow::Error::msg("invalid time string"))
-    }
+    Ok(DateTime::from_parts(
+        Date::new(year.parse()?, month.parse()?, day.parse()?)?,
+        Time::new(0, 0, 0, 0)?,
+    ))
 }
