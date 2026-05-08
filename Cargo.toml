@@ -1,7 +1,7 @@
 [package]
 name = "iced_7guis"
 description = "An implementation of 7 GUIs using iced."
-version = "0.2.0"
+version = "0.3.0"
 edition = "2024"
 rust-version =  "1.88"
 license = "MIT OR Apache-2.0"
@@ -16,7 +16,7 @@ include = ["src/**/*", "LICENSE-*", "README.md"]
 [dependencies]
 anyhow = "1"
 iced = { version = "0.14", features = ["canvas", "tokio"] }
-iced_aw = { version = "0.13", default-features = false, features = ["card", "selection_list"] }
+iced_aw = { version = "0.14", default-features = false, features = ["card", "selection_list"] }
 jiff = "0.2"
 sweeten = "0.14"
 
